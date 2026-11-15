@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ERP front end — Phase 1
 
-## Getting Started
+Front end for the ERP delivery proposal (*Accounts, Inventory & Common System Modules*,
+29 modules from `Accounts & Inventory Modules.xlsx`). This slice is the **application shell
+and the Dashboard module**; the remaining module screens follow the 30-day schedule in the
+proposal.
 
-First, run the development server:
+## Stack
+
+As specified in the proposal (§3 Recommended technical architecture):
+
+| Layer | Used here |
+| --- | --- |
+| Framework | Next.js 16 (App Router, React 19, Turbopack) |
+| Language | TypeScript, strict |
+| Styling | Tailwind CSS v4 with CSS custom-property design tokens |
+| Icons | lucide-react |
+| Charts | Hand-built inline SVG (no chart dependency) |
+| Backend (next phase) | Django 5 + DRF + PostgreSQL, consumed over REST |
+
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run build      # production build
+npx tsc --noEmit   # typecheck
+npx eslint .       # lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The UI runs on typed mock data until the API exists. Point it at Django with:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# .env.local
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+With that set, `src/lib/api/client.ts` calls the real endpoints instead and the
+“Sample data” badge disappears. No component imports mock data directly.
 
-## Learn More
+## Planned API contract
 
-To learn more about Next.js, take a look at the following resources:
+| Endpoint | Returns |
+| --- | --- |
+| `GET /api/common/session/` | `{ user, company }` — company, branches, financial years, role |
+| `GET /api/reporting/dashboard/?period=mtd\|last30\|qtd\|fytd` | `DashboardData` (see `src/lib/types.ts`) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Money crosses the wire as a **decimal string** (Django `DecimalField`) and is never parsed
+into a float for arithmetic in the UI — formatting only.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Layout of the code
 
-## Deploy on Vercel
+```
+src/
+  app/
+    layout.tsx                  root shell, fonts, pre-paint theme stamp
+    (erp)/layout.tsx            sidebar + topbar, loads session
+    (erp)/dashboard/page.tsx    Dashboard module
+    (erp)/[...segments]/page.tsx  placeholder for modules not built yet
+  components/
+    layout/                     sidebar, topbar, theme toggle, icon registry
+    charts/                     line, grouped bar, ranked bars, sparkline, tooltip, table view
+    dashboard/                  KPI tiles, panels, queues, tables
+    ui/                         panel, badge, status chip
+  lib/
+    api/client.ts               single data-access boundary
+    nav.ts                      all 29 workbook modules + delivery phase
+    config.ts                   product name, locale, currency, API base URL
+    format.ts                   INR money, quantity, date formatting
+    types.ts                    API contract types
+    mock/                       sample payloads, removed once the API lands
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Dashboard contents
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Covers the workbook’s Dashboard module — *financial overview; sales/purchase summary;
+receivables/payables; stock summary and alerts*:
+
+- eight KPI tiles (cash & bank, receivables, payables, stock value, sales, purchases,
+  gross profit, net VAT) with period deltas and sparklines
+- sales vs purchases by month, one value axis, crosshair tooltip, keyboard steppable
+- accounting controls: trial-balance equality, unposted journals, VAT position and due date
+- receivables/payables ageing buckets, stock value by warehouse, 7-day stock movement
+- inventory alerts, pending approvals, recent postings, customer credit exposure
+- period filter (MTD / last 30 days / QTD / FY to date) held in the URL
+
+## Accounting & Finance screens
+
+All ten workbook modules in the category have a screen. Each page is a server component
+that loads data through `src/lib/api/client.ts` and hands it to a client view that owns
+search, filters and tabs.
+
+| Route | Screen |
+| --- | --- |
+| `/accounting/chart-of-accounts` | Hierarchical account list, type/scope filters, opening and closing Dr/Cr |
+| `/accounting/general-ledger` | Journal vouchers with line-level detail and the debit=credit check; account statement with running balance |
+| `/accounting/accounts-receivable` | Customer exposure, ageing buckets, customer list with credit-limit use, open invoices |
+| `/accounting/accounts-payable` | Supplier exposure, ageing, due-in-7-days, open supplier bills |
+| `/accounting/sales-invoicing` | Sales register: tax/cash/proforma/credit note, VAT, balance, status, PDF action |
+| `/accounting/purchase-invoicing` | Purchase register with supplier reference, GRN matching, additional charges, input VAT |
+| `/accounting/cash-bank` | Account switcher, cash/bank book with running balance and reconciliation state, receipt and payment vouchers |
+| `/accounting/expenses` | Expense register, spend by category and department (Phase 2 module, shown with its scope) |
+| `/accounting/tax-vat` | Return workings by box, tax codes, filing history, net payable and due date |
+| `/accounting/financial-reporting` | Trial balance with totals and balance check, P&L and balance-sheet summaries, report catalogue |
+
+Shared pieces live in `src/components/ui` (`DataTable`, `Toolbar`, `Tabs`, `SummaryStrip`,
+`PageHeader`, `StatusPill`) and `src/components/accounting/party-ledger-view.tsx`, which
+serves both receivable and payable.
+
+## Conventions worth keeping
+
+- **Design tokens only.** Colours come from `globals.css` custom properties; dark mode is a
+  selected palette, not an inverted one.
+- **Charts.** One value axis per chart (never dual-axis), fixed categorical hue order, status
+  colours reserved for status, every chart carries a legend for 2+ series and a data-table
+  disclosure for the accessibility/print path.
+- **Money.** `formatMoney*` helpers only; never `toLocaleString` inline.
+- **Navigation is the module registry.** `src/lib/nav.ts` carries every workbook module, its
+  transcribed feature list and its delivery phase (`P1`, `P1 ltd`, `P2`), so unbuilt screens
+  render a scope page instead of a 404.
+
+## Not built yet (next steps)
+
+1. Authentication screens and JWT handling against Django SimpleJWT.
+2. Master-data screens (items, warehouses, customers, suppliers, chart of accounts).
+3. Transaction screens (invoices, receipts/payments, GRN, stock issue, transfer, adjustment).
+4. Report screens (trial balance, P&L, stock ledger) and invoice PDF preview.
+5. Replace mock data with live endpoints; add loading and error states per route.
