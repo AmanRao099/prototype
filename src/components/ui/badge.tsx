@@ -1,53 +1,58 @@
 import type { ReactNode } from "react";
-import { AlertTriangle, CheckCircle2, CircleAlert, Info, OctagonAlert } from "lucide-react";
 import type { DeliveryPhase, StatusLevel } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const TONE_CLASS: Record<string, string> = {
-  neutral: "border-hairline bg-surface-2 text-ink-secondary",
-  accent: "border-accent/30 bg-accent-wash text-accent",
-  good: "border-good/30 bg-good/10 text-good",
-  warning: "border-warning/40 bg-warning/12 text-ink-secondary",
-  serious: "border-serious/40 bg-serious/12 text-ink-secondary",
-  critical: "border-critical/35 bg-critical/10 text-critical",
+/**
+ * Badges stay quiet by default: one muted pill shape, tone carried by a small
+ * dot rather than a saturated fill. A register with forty rows should read as
+ * text, not as a bag of sweets.
+ */
+const TONE_DOT: Record<string, string> = {
+  neutral: "bg-axis",
+  accent: "bg-accent",
+  good: "bg-good",
+  warning: "bg-warning",
+  serious: "bg-serious",
+  critical: "bg-critical",
 };
 
 export function Badge({
   children,
   tone = "neutral",
+  dot = false,
   className,
 }: {
   children: ReactNode;
-  tone?: keyof typeof TONE_CLASS;
+  tone?: keyof typeof TONE_DOT;
+  dot?: boolean;
   className?: string;
 }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium whitespace-nowrap",
-        TONE_CLASS[tone],
+        "inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface-2 px-2 py-0.5 text-[10.5px] font-medium whitespace-nowrap text-ink-secondary",
         className,
       )}
     >
+      {dot ? (
+        <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", TONE_DOT[tone])} />
+      ) : null}
       {children}
     </span>
   );
 }
 
-const STATUS_META: Record<
-  StatusLevel,
-  { icon: typeof CheckCircle2; label: string; tone: keyof typeof TONE_CLASS; dot: string }
-> = {
-  good: { icon: CheckCircle2, label: "Healthy", tone: "good", dot: "bg-good" },
-  warning: { icon: Info, label: "Watch", tone: "warning", dot: "bg-warning" },
-  serious: { icon: AlertTriangle, label: "Action due", tone: "serious", dot: "bg-serious" },
-  critical: { icon: OctagonAlert, label: "Critical", tone: "critical", dot: "bg-critical" },
-  neutral: { icon: CircleAlert, label: "Info", tone: "neutral", dot: "bg-axis" },
+const STATUS_META: Record<StatusLevel, { label: string; tone: keyof typeof TONE_DOT }> = {
+  good: { label: "Healthy", tone: "good" },
+  warning: { label: "Watch", tone: "warning" },
+  serious: { label: "Action due", tone: "serious" },
+  critical: { label: "Critical", tone: "critical" },
+  neutral: { label: "Info", tone: "neutral" },
 };
 
 /**
- * Status always ships as icon + text. Colour never carries the meaning alone
- * (two of the four status steps sit below 3:1 on the light surface by design).
+ * Status always ships as dot + text. The word carries the meaning, so a reader
+ * who cannot separate the hues loses nothing.
  */
 export function StatusChip({
   level,
@@ -59,35 +64,39 @@ export function StatusChip({
   className?: string;
 }) {
   const meta = STATUS_META[level];
-  const Icon = meta.icon;
   return (
-    <Badge tone={meta.tone} className={className}>
-      <Icon className="size-3 shrink-0" aria-hidden />
+    <Badge tone={meta.tone} dot className={className}>
       {label ?? meta.label}
     </Badge>
   );
 }
 
 export function statusDotClass(level: StatusLevel): string {
-  return STATUS_META[level].dot;
+  return TONE_DOT[STATUS_META[level].tone];
 }
 
-const PHASE_TONE: Record<DeliveryPhase, keyof typeof TONE_CLASS> = {
-  mvp: "neutral",
-  limited: "warning",
-  phase2: "neutral",
-};
-
 const PHASE_TEXT: Record<DeliveryPhase, string> = {
-  mvp: "P1",
-  limited: "P1 ltd",
-  phase2: "P2",
+  mvp: "Phase 1",
+  limited: "Phase 1 · limited",
+  phase2: "Phase 2",
 };
 
-export function PhaseBadge({ phase }: { phase: DeliveryPhase }) {
+/** Delivery phase marker - deliberately the lightest thing on the screen. */
+export function PhaseBadge({ phase, compact = false }: { phase: DeliveryPhase; compact?: boolean }) {
+  if (compact) {
+    return (
+      <span
+        title={PHASE_TEXT[phase]}
+        className="shrink-0 rounded-md px-1 py-px text-[9.5px] font-semibold tracking-wide text-ink-muted/80 ring-1 ring-hairline ring-inset"
+      >
+        {phase === "phase2" ? "P2" : "LTD"}
+      </span>
+    );
+  }
+
   return (
-    <Badge tone={PHASE_TONE[phase]} className={phase === "phase2" ? "opacity-70" : undefined}>
+    <span className="inline-flex items-center rounded-full bg-surface-2 px-2 py-0.5 text-[10.5px] font-medium text-ink-muted">
       {PHASE_TEXT[phase]}
-    </Badge>
+    </span>
   );
 }

@@ -26,7 +26,7 @@ export function AlertsPanel({ alerts }: { alerts: InventoryAlert[] }) {
   return (
     <ul className="divide-y divide-hairline">
       {sorted.map((alert) => (
-        <li key={alert.id} className="flex gap-3 px-4 py-2.5">
+        <li key={alert.id} className="flex gap-2.5 px-4 py-3">
           <span
             aria-hidden
             className={cn("mt-1.5 size-1.5 shrink-0 rounded-full", statusDotClass(alert.level))}

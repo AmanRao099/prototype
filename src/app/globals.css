@@ -2,25 +2,39 @@
 
 /* ---------------------------------------------------------------------------
    ERP design tokens
-   Chart palette + chrome follow the validated reference palette (dataviz).
-   Light and dark steps are both selected, never an automatic flip.
+
+   Surfaces run as a ladder (plane -> surface -> raised -> inset) so panels,
+   toolbars and hover states separate by tone rather than by heavy borders.
+   Chart colours follow the validated reference palette; status steps are fixed
+   and never reused as series colours.
 --------------------------------------------------------------------------- */
 :root {
   color-scheme: light;
 
   /* planes & ink */
-  --plane: #f9f9f7;
-  --surface: #fcfcfb;
-  --surface-2: #f3f3f0;
-  --ink: #0b0b0b;
-  --ink-secondary: #52514e;
-  --ink-muted: #898781;
-  --hairline: rgba(11, 11, 11, 0.1);
-  --hairline-strong: rgba(11, 11, 11, 0.18);
-  --grid: #e1e0d9;
-  --axis: #c3c2b7;
+  --plane: #f6f6f4;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-2: #f1f1ee;
+  --surface-3: #e9e9e4;
+  --ink: #16161a;
+  --ink-secondary: #51514e;
+  --ink-muted: #87867f;
+  --hairline: rgba(16, 16, 20, 0.08);
+  --hairline-strong: rgba(16, 16, 20, 0.16);
+  --grid: #e4e3dd;
+  --axis: #c8c7bf;
   --accent: #2a78d6;
-  --accent-wash: rgba(42, 120, 214, 0.1);
+  --accent-hover: #2169bd;
+  --accent-wash: rgba(42, 120, 214, 0.09);
+  --accent-ring: rgba(42, 120, 214, 0.35);
+  --on-accent: #ffffff;
+  --control-track: #ebebe7;
+  --control-active: #ffffff;
+
+  /* elevation - light mode leans on soft shadow, dark mode on tone */
+  --shadow-panel: 0 1px 2px rgba(16, 16, 20, 0.04), 0 1px 1px rgba(16, 16, 20, 0.03);
+  --shadow-raised: 0 6px 20px rgba(16, 16, 20, 0.1);
 
   /* categorical series (fixed order, never cycled) */
   --series-1: #2a78d6;
@@ -45,24 +59,33 @@
   --serious: #ec835a;
   --critical: #d03b3b;
   --delta-up: #006300;
-  --delta-down: #d03b3b;
+  --delta-down: #c6372f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --plane: #0d0d0d;
-    --surface: #1a1a19;
-    --surface-2: #232321;
-    --ink: #f0efec;
-    --ink-secondary: #c3c2b7;
-    --ink-muted: #898781;
-    --hairline: rgba(255, 255, 255, 0.1);
-    --hairline-strong: rgba(255, 255, 255, 0.18);
-    --grid: #2c2c2a;
-    --axis: #383835;
-    --accent: #3987e5;
-    --accent-wash: rgba(57, 135, 229, 0.16);
+    --plane: #0c0c0d;
+    --surface: #141416;
+    --surface-raised: #18181b;
+    --surface-2: #1d1d20;
+    --surface-3: #26262a;
+    --ink: #f2f2f0;
+    --ink-secondary: #b9b9b3;
+    --ink-muted: #85857f;
+    --hairline: rgba(255, 255, 255, 0.08);
+    --hairline-strong: rgba(255, 255, 255, 0.16);
+    --grid: #26262a;
+    --axis: #3a3a3f;
+    --accent: #4b8fe8;
+    --accent-hover: #6ba4ee;
+    --accent-wash: rgba(75, 143, 232, 0.14);
+    --accent-ring: rgba(75, 143, 232, 0.45);
+    --on-accent: #0b1220;
+    --control-track: #141416;
+    --control-active: #2b2b30;
+    --shadow-panel: none;
+    --shadow-raised: 0 8px 28px rgba(0, 0, 0, 0.5);
     --series-1: #3987e5;
     --series-2: #d95926;
     --series-3: #199e70;
@@ -83,18 +106,27 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --plane: #0d0d0d;
-  --surface: #1a1a19;
-  --surface-2: #232321;
-  --ink: #f0efec;
-  --ink-secondary: #c3c2b7;
-  --ink-muted: #898781;
-  --hairline: rgba(255, 255, 255, 0.1);
-  --hairline-strong: rgba(255, 255, 255, 0.18);
-  --grid: #2c2c2a;
-  --axis: #383835;
-  --accent: #3987e5;
-  --accent-wash: rgba(57, 135, 229, 0.16);
+  --plane: #0c0c0d;
+  --surface: #141416;
+  --surface-raised: #18181b;
+  --surface-2: #1d1d20;
+  --surface-3: #26262a;
+  --ink: #f2f2f0;
+  --ink-secondary: #b9b9b3;
+  --ink-muted: #85857f;
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-strong: rgba(255, 255, 255, 0.16);
+  --grid: #26262a;
+  --axis: #3a3a3f;
+  --accent: #4b8fe8;
+  --accent-hover: #6ba4ee;
+  --accent-wash: rgba(75, 143, 232, 0.14);
+  --accent-ring: rgba(75, 143, 232, 0.45);
+  --on-accent: #0b1220;
+  --control-track: #141416;
+  --control-active: #2b2b30;
+  --shadow-panel: none;
+  --shadow-raised: 0 8px 28px rgba(0, 0, 0, 0.5);
   --series-1: #3987e5;
   --series-2: #d95926;
   --series-3: #199e70;
@@ -115,7 +147,9 @@
 @theme inline {
   --color-plane: var(--plane);
   --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
   --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
   --color-ink: var(--ink);
   --color-ink-secondary: var(--ink-secondary);
   --color-ink-muted: var(--ink-muted);
@@ -124,7 +158,11 @@
   --color-grid: var(--grid);
   --color-axis: var(--axis);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-wash: var(--accent-wash);
+  --color-on-accent: var(--on-accent);
+  --color-control-track: var(--control-track);
+  --color-control-active: var(--control-active);
   --color-series-1: var(--series-1);
   --color-series-2: var(--series-2);
   --color-series-3: var(--series-3);
@@ -140,6 +178,8 @@
   --color-delta-up: var(--delta-up);
   --color-delta-down: var(--delta-down);
   --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --shadow-panel: var(--shadow-panel);
+  --shadow-raised: var(--shadow-raised);
 }
 
 html,
@@ -151,30 +191,143 @@ body {
   background: var(--plane);
   color: var(--ink);
   font-family: var(--font-sans);
+  font-feature-settings: "cv05" 1, "ss01" 1;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent-wash);
+  color: var(--ink);
+}
+
+/* ----------------------------------------------------------------------- */
+/* Type roles - one place to tune the hierarchy across every screen         */
+/* ----------------------------------------------------------------------- */
+.t-page-title {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.014em;
+  color: var(--ink);
+}
+
+.t-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.006em;
+  color: var(--ink);
+}
+
+.t-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.t-figure {
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+}
+
+.t-figure-sm {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.016em;
+  color: var(--ink);
+}
+
+.t-body {
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.t-caption {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink-muted);
 }
 
 .tnum {
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 
-/* recessive scrollbars inside panels */
+/* ----------------------------------------------------------------------- */
+/* Controls                                                                 */
+/* ----------------------------------------------------------------------- */
+.field {
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 12px;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    background-color 120ms ease;
+}
+
+.field::placeholder {
+  color: var(--ink-muted);
+}
+
+.field:hover {
+  border-color: var(--hairline-strong);
+}
+
+.field:focus,
+.field:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+/* native select with its own chevron */
+.select-field {
+  appearance: none;
+  padding-right: 26px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-muted) 50%),
+    linear-gradient(135deg, var(--ink-muted) 50%, transparent 50%);
+  background-position:
+    right 13px center,
+    right 9px center;
+  background-size:
+    4px 4px,
+    4px 4px;
+  background-repeat: no-repeat;
+}
+
 .scroll-thin {
   scrollbar-width: thin;
   scrollbar-color: var(--axis) transparent;
 }
 
+.scroll-thin::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.scroll-thin::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-color: var(--axis);
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: 4px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+  border-radius: 6px;
 }
 
 /* theme-dependent icon swap, so the toggle needs no client state */
@@ -197,4 +350,28 @@ body {
 
 :root[data-theme="dark"] .when-dark {
   display: inline-block;
+}
+
+/* skeleton shimmer for route loading states */
+@keyframes erp-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.skeleton {
+  background: var(--surface-2);
+  border-radius: 6px;
+  animation: erp-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -65,7 +65,11 @@ export function AccountsView({ accounts }: { accounts: Account[] }) {
           <span className={account.isGroup ? "font-medium text-ink" : "text-ink"}>
             {account.name}
           </span>
-          {account.isBankOrCash ? <Badge tone="accent">Cash / bank</Badge> : null}
+          {account.isBankOrCash ? (
+            <Badge tone="accent" dot>
+              Cash / bank
+            </Badge>
+          ) : null}
         </span>
       ),
     },
@@ -108,9 +112,9 @@ export function AccountsView({ accounts }: { accounts: Account[] }) {
       hideBelow: "md",
       cell: (account) =>
         account.isActive ? (
-          <Badge tone="good">Active</Badge>
+          <span className="text-ink-secondary">Active</span>
         ) : (
-          <Badge tone="neutral">Inactive</Badge>
+          <span className="text-ink-muted">Inactive</span>
         ),
     },
   ];

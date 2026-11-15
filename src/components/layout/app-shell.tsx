@@ -19,7 +19,7 @@ export function AppShell({
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-plane">
       <Sidebar mobileOpen={mobileNavOpen} onCloseMobile={() => setMobileNavOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar
@@ -28,7 +28,10 @@ export function AppShell({
           alertCount={alertCount}
           onOpenMobileNav={() => setMobileNavOpen(true)}
         />
-        <main className="min-w-0 flex-1 px-4 py-4 sm:px-5 sm:py-5">{children}</main>
+        <main className="min-w-0 flex-1">
+          {/* a cap keeps line lengths and tile widths sane on ultrawide displays */}
+          <div className="mx-auto w-full max-w-[1680px] px-4 py-5 sm:px-6">{children}</div>
+        </main>
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ export function VatView({
       key: "treatment",
       header: "Treatment",
       hideBelow: "md",
-      cell: (box) => <Badge tone="neutral">{TREATMENT_LABEL[box.treatment]}</Badge>,
+      cell: (box) => <span>{TREATMENT_LABEL[box.treatment]}</span>,
     },
     {
       key: "amount",
@@ -81,7 +81,11 @@ export function VatView({
       header: "Status",
       align: "right",
       cell: (code) =>
-        code.isActive ? <Badge tone="good">Active</Badge> : <Badge tone="neutral">Disabled</Badge>,
+        code.isActive ? (
+          <span className="text-ink-secondary">Active</span>
+        ) : (
+          <span className="text-ink-muted">Disabled</span>
+        ),
     },
   ];
 
@@ -107,7 +111,7 @@ export function VatView({
       header: "Status",
       align: "right",
       cell: (row) => (
-        <Badge tone={STATUS_TONE[row.status]}>
+        <Badge tone={STATUS_TONE[row.status]} dot>
           {row.status === "open" ? "Open" : row.status === "ready" ? "Ready to file" : "Filed"}
         </Badge>
       ),
@@ -195,12 +199,8 @@ export function VatView({
             <PanelHeader title="Return summary" subtitle={period?.label} />
             <PanelBody className="flex flex-col gap-3">
               <div>
-                <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-muted">
-                  Net VAT payable
-                </p>
-                <p className="mt-1.5 text-[28px] leading-none font-semibold tracking-tight text-ink">
-                  {formatMoneyWhole(outputVat - inputVat)}
-                </p>
+                <p className="t-eyebrow">Net VAT payable</p>
+                <p className="t-figure mt-2 tnum">{formatMoneyWhole(outputVat - inputVat)}</p>
               </div>
 
               <dl className="space-y-1.5 border-t border-hairline pt-2.5 text-[11.5px]">
@@ -222,7 +222,7 @@ export function VatView({
                   <dt className="text-ink-muted">Status</dt>
                   <dd>
                     {period ? (
-                      <Badge tone={STATUS_TONE[period.status]}>
+                      <Badge tone={STATUS_TONE[period.status]} dot>
                         {period.status === "open" ? "Open" : period.status === "ready" ? "Ready to file" : "Filed"}
                       </Badge>
                     ) : null}

@@ -13,6 +13,7 @@ import { ReceivablesPanel } from "@/components/dashboard/receivables-panel";
 import { SalesPurchasePanel } from "@/components/dashboard/sales-purchase-panel";
 import { StockMovementPanel } from "@/components/dashboard/stock-movement-panel";
 import { Badge } from "@/components/ui/badge";
+import { ActionButton } from "@/components/ui/page-header";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { USING_MOCK_DATA, getDashboard } from "@/lib/api/client";
 import { formatDateTime, formatMoneyCompact, formatMoneyWhole, formatQty } from "@/lib/format";
@@ -44,30 +45,22 @@ export default async function DashboardPage({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-[18px] font-semibold tracking-tight text-ink">Dashboard</h1>
-            {USING_MOCK_DATA ? <Badge tone="accent">Sample data</Badge> : null}
+            <h1 className="t-page-title">Dashboard</h1>
+            {USING_MOCK_DATA ? (
+              <Badge tone="accent" dot>
+                Sample data
+              </Badge>
+            ) : null}
           </div>
-          <p className="mt-0.5 text-[11.5px] text-ink-muted">
+          <p className="t-caption mt-1">
             {PERIOD_LABEL[period]} - figures as at {formatDateTime(data.generatedAt)}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <PeriodFilter active={period} />
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-hairline px-2.5 py-1.5 text-[11.5px] font-medium text-ink-secondary transition-colors hover:bg-surface-2 hover:text-ink"
-          >
-            <RefreshCw className="size-3.5" aria-hidden />
-            Refresh
-          </button>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-hairline px-2.5 py-1.5 text-[11.5px] font-medium text-ink-secondary transition-colors hover:bg-surface-2 hover:text-ink"
-          >
-            <Download className="size-3.5" aria-hidden />
-            Export
-          </button>
+          <ActionButton icon={<RefreshCw className="size-3.5" />}>Refresh</ActionButton>
+          <ActionButton icon={<Download className="size-3.5" />}>Export</ActionButton>
         </div>
       </div>
 

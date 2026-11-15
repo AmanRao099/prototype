@@ -20,37 +20,45 @@ const HIDE_CLASS: Record<NonNullable<Column<unknown>["hideBelow"]>, string> = {
 };
 
 /**
- * The table every register and list screen uses. Dense rows, tabular figures on
- * the right-aligned columns, hairline rules - no zebra striping or heavy chrome.
+ * The register table. Dense but not cramped: a sticky header, hairline row
+ * rules at half strength, tabular figures on every right-aligned column, and
+ * no zebra striping - the hover tint is the only row chrome.
  */
 export function DataTable<T extends { id: string }>({
   columns,
   rows,
   footer,
-  emptyMessage = "No records for the current filters.",
+  emptyMessage = "No records match the current filters.",
   minWidth = "min-w-[720px]",
+  maxHeight,
 }: {
   columns: Array<Column<T>>;
   rows: T[];
   footer?: ReactNode;
   emptyMessage?: string;
   minWidth?: string;
+  maxHeight?: string;
 }) {
   if (rows.length === 0) {
-    return <p className="px-4 py-10 text-center text-[12px] text-ink-muted">{emptyMessage}</p>;
+    return (
+      <div className="px-4 py-14 text-center">
+        <p className="text-[12.5px] text-ink-secondary">{emptyMessage}</p>
+        <p className="t-caption mt-1">Adjust the search or filters above.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="scroll-thin overflow-x-auto">
-      <table className={cn("w-full border-collapse text-[12px]", minWidth)}>
-        <thead>
-          <tr className="border-b border-hairline text-left text-[10.5px] uppercase tracking-[0.06em] text-ink-muted">
+    <div className={cn("scroll-thin overflow-x-auto", maxHeight && "overflow-y-auto", maxHeight)}>
+      <table className={cn("w-full border-collapse text-[12.5px]", minWidth)}>
+        <thead className="sticky top-0 z-10 bg-surface">
+          <tr className="border-b border-hairline text-left">
             {columns.map((column) => (
               <th
                 key={column.key}
                 scope="col"
                 className={cn(
-                  "px-3 py-2 font-medium first:pl-4 last:pr-4",
+                  "px-3 py-2.5 text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase first:pl-4 last:pr-4",
                   column.align === "right" && "text-right",
                   column.width,
                   column.hideBelow && HIDE_CLASS[column.hideBelow],
@@ -65,13 +73,13 @@ export function DataTable<T extends { id: string }>({
           {rows.map((row) => (
             <tr
               key={row.id}
-              className="border-b border-hairline/60 last:border-0 hover:bg-surface-2/50"
+              className="border-b border-hairline/60 transition-colors last:border-0 hover:bg-surface-2/60"
             >
               {columns.map((column) => (
                 <td
                   key={column.key}
                   className={cn(
-                    "px-3 py-2 align-top first:pl-4 last:pr-4",
+                    "px-3 py-2.5 align-middle whitespace-nowrap first:pl-4 last:pr-4",
                     column.align === "right" ? "text-right tnum text-ink" : "text-ink-secondary",
                     column.hideBelow && HIDE_CLASS[column.hideBelow],
                   )}
@@ -83,13 +91,23 @@ export function DataTable<T extends { id: string }>({
           ))}
         </tbody>
         {footer ? (
-          <tfoot>
-            <tr className="border-t border-hairline bg-surface-2/40 text-[11.5px] font-medium text-ink">
-              {footer}
-            </tr>
+          <tfoot className="sticky bottom-0 bg-surface-2/80 backdrop-blur">
+            <tr className="border-t border-hairline text-[11.5px] font-medium text-ink">{footer}</tr>
           </tfoot>
         ) : null}
       </table>
     </div>
+  );
+}
+
+/** Two-line cell used across the registers: a primary value and a quiet note. */
+export function CellStack({ primary, secondary }: { primary: ReactNode; secondary?: ReactNode }) {
+  return (
+    <span className="block min-w-0">
+      <span className="block truncate font-medium text-ink">{primary}</span>
+      {secondary ? (
+        <span className="mt-0.5 block truncate text-[10.5px] text-ink-muted">{secondary}</span>
+      ) : null}
+    </span>
   );
 }

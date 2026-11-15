@@ -455,8 +455,8 @@ export function getMockDashboard(period: PeriodKey = "mtd"): DashboardData {
       returnDueOn: "2026-11-28",
     },
     trialBalance: {
-      totalDebit: 6_18_42_700,
-      totalCredit: 6_18_42_700,
+      totalDebit: 18_62_48_525,
+      totalCredit: 18_62_48_525,
       balanced: true,
       unpostedJournals: 3,
     },

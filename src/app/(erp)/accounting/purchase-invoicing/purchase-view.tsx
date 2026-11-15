@@ -2,8 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { PackageCheck } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { DataTable, type Column } from "@/components/ui/data-table";
+import { CellStack, DataTable, type Column } from "@/components/ui/data-table";
 import { Panel } from "@/components/ui/panel";
 import { StatusPill } from "@/components/ui/status-pill";
 import { ResultCount, Toolbar } from "@/components/ui/toolbar";
@@ -40,31 +39,21 @@ export function PurchaseView({ invoices }: { invoices: PurchaseInvoice[] }) {
     {
       key: "number",
       header: "Document",
-      cell: (invoice) => (
-        <span>
-          <span className="block font-medium text-ink">{invoice.number}</span>
-          <span className="block text-[10.5px] text-ink-muted">{formatDate(invoice.date)}</span>
-        </span>
-      ),
+      cell: (invoice) => <CellStack primary={invoice.number} secondary={formatDate(invoice.date)} />,
     },
     {
       key: "supplier",
       header: "Supplier",
-      cell: (invoice) => (
-        <span>
-          <span className="block text-ink">{invoice.supplier}</span>
-          <span className="block text-[10.5px] text-ink-muted">Ref {invoice.supplierRef}</span>
-        </span>
-      ),
+      cell: (invoice) => <CellStack primary={invoice.supplier} secondary={`Ref ${invoice.supplierRef}`} />,
     },
     {
       key: "type",
       header: "Type",
       hideBelow: "lg",
       cell: (invoice) => (
-        <Badge tone={invoice.invoiceType === "debit_note" ? "warning" : "neutral"}>
+        <span className={invoice.invoiceType === "debit_note" ? "text-ink" : undefined}>
           {TYPE_LABEL[invoice.invoiceType]}
-        </Badge>
+        </span>
       ),
     },
     {

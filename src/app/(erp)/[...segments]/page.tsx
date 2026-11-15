@@ -37,11 +37,11 @@ export default async function ModulePlaceholderPage({
           </span>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-[18px] font-semibold tracking-tight text-ink">{item.label}</h1>
+              <h1 className="t-page-title">{item.label}</h1>
               <PhaseBadge phase={item.phase} />
               {item.badge ? <Badge tone="neutral">{item.badge}</Badge> : null}
             </div>
-            <p className="mt-0.5 text-[11.5px] text-ink-muted">
+            <p className="t-caption mt-1">
               {group?.title ?? "Common System"} - {PHASE_LABEL[item.phase]}
             </p>
           </div>

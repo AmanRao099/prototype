@@ -11,7 +11,7 @@ export function ApprovalsPanel({ approvals }: { approvals: ApprovalRequest[] }) 
   return (
     <ul className="divide-y divide-hairline">
       {approvals.map((approval) => (
-        <li key={approval.id} className="px-4 py-2.5">
+        <li key={approval.id} className="px-4 py-3">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <p className="truncate text-[12.5px] font-medium text-ink">
@@ -37,14 +37,14 @@ export function ApprovalsPanel({ approvals }: { approvals: ApprovalRequest[] }) 
             <div className="flex shrink-0 items-center gap-1.5">
               <button
                 type="button"
-                className="inline-flex items-center gap-1 rounded-md border border-hairline px-1.5 py-0.5 text-[10.5px] font-medium text-ink-secondary transition-colors hover:bg-surface-2 hover:text-ink"
+                className="inline-flex h-[24px] items-center gap-1 rounded-md px-1.5 text-[10.5px] font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
               >
                 <X className="size-3" aria-hidden />
                 Reject
               </button>
               <button
                 type="button"
-                className="inline-flex items-center gap-1 rounded-md bg-accent px-1.5 py-0.5 text-[10.5px] font-medium text-white transition-opacity hover:opacity-90"
+                className="inline-flex h-[24px] items-center gap-1 rounded-md border border-hairline bg-surface-2 px-1.5 text-[10.5px] font-medium text-ink transition-colors hover:border-hairline-strong"
               >
                 <Check className="size-3" aria-hidden />
                 Approve

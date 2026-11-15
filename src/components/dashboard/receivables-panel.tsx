@@ -16,7 +16,7 @@ export function ReceivablesPanel({ parties }: { parties: PartyOutstanding[] }) {
       {parties.map((party) => {
         const { used, level } = creditState(party);
         return (
-          <li key={party.id} className="px-4 py-2.5">
+          <li key={party.id} className="px-4 py-3">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="truncate text-[12.5px] font-medium text-ink">{party.name}</p>

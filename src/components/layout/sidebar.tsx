@@ -36,40 +36,37 @@ export function Sidebar({
 
   return (
     <>
-      {/* scrim for the mobile drawer */}
       <div
         onClick={onCloseMobile}
-        className={cn(
-          "fixed inset-0 z-30 bg-black/30 lg:hidden",
-          mobileOpen ? "block" : "hidden",
-        )}
+        className={cn("fixed inset-0 z-30 bg-black/40 lg:hidden", mobileOpen ? "block" : "hidden")}
         aria-hidden
       />
 
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-hairline bg-surface transition-[width,transform] duration-200 lg:static lg:translate-x-0",
-          collapsed ? "lg:w-[68px]" : "lg:w-[268px]",
-          "w-[268px]",
+          collapsed ? "lg:w-[60px]" : "lg:w-[254px]",
+          "w-[254px]",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-14 items-center gap-2 border-b border-hairline px-3">
+        {/* brand */}
+        <div className="flex h-14 items-center gap-2.5 px-3">
           <Link
             href={DASHBOARD_ITEM.href}
-            className="flex min-w-0 items-center gap-2"
+            className="flex min-w-0 items-center gap-2.5"
             onClick={onCloseMobile}
           >
-            <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-accent text-[13px] font-bold text-white">
+            <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-accent text-[12px] font-bold text-on-accent">
               A
             </span>
             {!collapsed ? (
               <span className="min-w-0">
-                <span className="block truncate text-[13px] font-semibold text-ink">
+                <span className="block truncate text-[13px] leading-tight font-semibold tracking-[-0.01em] text-ink">
                   {APP_CONFIG.productName}
                 </span>
                 <span className="block truncate text-[10px] text-ink-muted">
-                  Accounts, Inventory & Common
+                  Accounts · Inventory · System
                 </span>
               </span>
             ) : null}
@@ -78,7 +75,7 @@ export function Sidebar({
           <button
             type="button"
             onClick={onCloseMobile}
-            className="ml-auto rounded-md p-1.5 text-ink-secondary hover:bg-surface-2 lg:hidden"
+            className="ml-auto rounded-lg p-1.5 text-ink-muted hover:bg-surface-2 hover:text-ink lg:hidden"
             aria-label="Close navigation"
           >
             <X className="size-4" />
@@ -87,7 +84,7 @@ export function Sidebar({
           <button
             type="button"
             onClick={() => setCollapsed((value) => !value)}
-            className="ml-auto hidden rounded-md p-1.5 text-ink-secondary hover:bg-surface-2 hover:text-ink lg:block"
+            className="ml-auto hidden rounded-lg p-1.5 text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink lg:block"
             aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
           >
             {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
@@ -95,7 +92,7 @@ export function Sidebar({
         </div>
 
         {!collapsed ? (
-          <div className="border-b border-hairline p-3">
+          <div className="px-3 pb-3">
             <label className="relative block">
               <Search
                 className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-ink-muted"
@@ -105,13 +102,16 @@ export function Sidebar({
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search modules"
-                className="w-full rounded-lg border border-hairline bg-plane py-1.5 pr-2 pl-8 text-[12px] text-ink placeholder:text-ink-muted focus:border-accent focus:outline-none"
+                className="field w-full pr-2 pl-8"
               />
             </label>
           </div>
         ) : null}
 
-        <nav className="scroll-thin flex-1 overflow-y-auto px-2 py-3" aria-label="Modules">
+        <nav
+          className="scroll-thin flex-1 overflow-y-auto px-2 pb-3"
+          aria-label="Modules"
+        >
           <SidebarLink
             item={DASHBOARD_ITEM}
             active={pathname === DASHBOARD_ITEM.href}
@@ -120,15 +120,13 @@ export function Sidebar({
           />
 
           {groups.map((group) => (
-            <div key={group.title} className="mt-4">
+            <div key={group.title} className="mt-5 first:mt-3">
               {!collapsed ? (
-                <p className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-muted">
-                  {group.title}
-                </p>
+                <p className="t-eyebrow px-2 pb-1.5">{group.title}</p>
               ) : (
-                <div className="mx-2 my-2 border-t border-hairline" />
+                <div className="mx-2 my-3 border-t border-hairline" />
               )}
-              <ul className="space-y-0.5">
+              <ul className="space-y-px">
                 {group.items.map((item) => (
                   <li key={item.href}>
                     <SidebarLink
@@ -149,11 +147,12 @@ export function Sidebar({
         </nav>
 
         {!collapsed ? (
-          <div className="border-t border-hairline px-3 py-2.5 text-[10px] leading-relaxed text-ink-muted">
-            29 modules from the source workbook.
-            <br />
-            <span className="text-ink-secondary">P1</span> ships in the 30-day MVP,{" "}
-            <span className="text-ink-secondary">P2</span> in the post-MVP roadmap.
+          <div className="border-t border-hairline px-3 py-2.5">
+            <p className="text-[10.5px] leading-relaxed text-ink-muted">
+              29 modules from the source workbook.{" "}
+              <span className="text-ink-secondary">LTD</span> and{" "}
+              <span className="text-ink-secondary">P2</span> mark limited and post-MVP scope.
+            </p>
           </div>
         ) : null}
       </aside>
@@ -179,18 +178,26 @@ function SidebarLink({
       title={collapsed ? item.label : undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[12.5px] transition-colors",
+        "group relative flex h-[30px] items-center gap-2.5 rounded-lg px-2 text-[12.5px] transition-colors",
         active
-          ? "bg-accent-wash font-medium text-accent"
-          : "text-ink-secondary hover:bg-surface-2 hover:text-ink",
-        item.phase === "phase2" && !active && "opacity-70",
+          ? "bg-surface-2 font-medium text-ink"
+          : "text-ink-secondary hover:bg-surface-2/60 hover:text-ink",
       )}
     >
-      <NavIcon name={item.icon} className="size-4 shrink-0" />
+      {active ? (
+        <span
+          aria-hidden
+          className="absolute top-1/2 -left-2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-accent"
+        />
+      ) : null}
+      <NavIcon
+        name={item.icon}
+        className={cn("size-[15px] shrink-0", active ? "text-accent" : "text-ink-muted")}
+      />
       {!collapsed ? (
         <>
           <span className="min-w-0 flex-1 truncate">{item.label}</span>
-          {item.phase !== "mvp" ? <PhaseBadge phase={item.phase} /> : null}
+          {item.phase !== "mvp" ? <PhaseBadge phase={item.phase} compact /> : null}
         </>
       ) : null}
     </Link>

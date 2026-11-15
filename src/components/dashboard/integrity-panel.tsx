@@ -47,15 +47,10 @@ export function IntegrityPanel({
 
       <div>
         <div className="flex items-baseline justify-between gap-3">
-          <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-muted">
-            Net VAT payable
-          </p>
+          <p className="t-eyebrow">Net VAT payable</p>
           <p className="text-[10.5px] text-ink-muted">{vat.periodLabel}</p>
         </div>
-        <p
-          className="mt-1.5 text-[28px] leading-none font-semibold tracking-tight text-ink"
-          title={formatMoneyWhole(vat.netPayable)}
-        >
+        <p className="t-figure mt-2 tnum" title={formatMoneyWhole(vat.netPayable)}>
           {formatMoneyCompact(vat.netPayable)}
         </p>
         <dl className="mt-3 space-y-1.5 border-t border-hairline pt-2.5 text-[11px]">

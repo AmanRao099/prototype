@@ -12,8 +12,9 @@ export interface FilterSpec {
 }
 
 /**
- * One filter row above a register: free-text search on the left, dimension
- * filters next to it, actions on the right.
+ * One filter row above a register: search on the left, dimension filters next
+ * to it, counts and actions on the right. Sits on the inset surface so the
+ * table below reads as the content.
  */
 export function Toolbar({
   search,
@@ -29,7 +30,7 @@ export function Toolbar({
   children?: ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b border-hairline px-3 py-2.5">
+    <div className="flex flex-wrap items-center gap-2 border-b border-hairline bg-surface-2/30 px-3 py-2.5">
       <label className="relative min-w-[200px] flex-1">
         <span className="sr-only">{searchPlaceholder}</span>
         <Search
@@ -40,17 +41,17 @@ export function Toolbar({
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder={searchPlaceholder}
-          className="w-full rounded-lg border border-hairline bg-plane py-1.5 pr-2 pl-8 text-[12px] text-ink placeholder:text-ink-muted focus:border-accent focus:outline-none"
+          className="field w-full pr-2 pl-8"
         />
       </label>
 
       {filters.map((filter) => (
-        <label key={filter.id} className="flex items-center gap-1.5">
+        <label key={filter.id} className="flex items-center">
           <span className="sr-only">{filter.label}</span>
           <select
             value={filter.value}
             onChange={(event) => filter.onChange(event.target.value)}
-            className="rounded-lg border border-hairline bg-plane px-2 py-1.5 text-[12px] text-ink focus:border-accent focus:outline-none"
+            className="field select-field pl-2.5"
           >
             {filter.options.map((option) => (
               <option key={option.value} value={option.value}>
@@ -61,14 +62,14 @@ export function Toolbar({
         </label>
       ))}
 
-      {children ? <div className="flex items-center gap-2">{children}</div> : null}
+      {children ? <div className="flex items-center gap-2 pl-1">{children}</div> : null}
     </div>
   );
 }
 
 export function ResultCount({ shown, total, noun }: { shown: number; total: number; noun: string }) {
   return (
-    <p className="text-[11px] text-ink-muted tnum">
+    <p className="text-[11px] tnum text-ink-muted">
       {shown === total ? `${total} ${noun}` : `${shown} of ${total} ${noun}`}
     </p>
   );

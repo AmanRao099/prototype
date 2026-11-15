@@ -1,47 +1,40 @@
 import Link from "next/link";
-import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { Sparkline } from "@/components/charts/sparkline";
 import { formatMoneyCompact, formatMoneyWhole, formatPercent } from "@/lib/format";
 import type { Kpi } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 /**
- * Stat tile. The number is the chart; the sparkline only shows shape.
+ * Stat tile. The number is the chart; the sparkline only carries shape.
  * A delta is coloured only when the metric declares a direction
- * (`riseIsGood`), and the arrow icon plus the sign carry it without colour.
+ * (`riseIsGood`); the arrow and the sign carry it without colour.
  */
 export function KpiTile({ kpi, comparisonLabel }: { kpi: Kpi; comparisonLabel: string }) {
   const delta = kpi.deltaPct;
   const hasDirection = typeof delta === "number" && typeof kpi.riseIsGood === "boolean";
   const isFavourable = hasDirection ? delta > 0 === kpi.riseIsGood : undefined;
-  const DeltaIcon = delta === undefined ? Minus : delta > 0 ? ArrowUpRight : ArrowDownRight;
+  const DeltaIcon = delta !== undefined && delta < 0 ? ArrowDownRight : ArrowUpRight;
 
   const body = (
     <>
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-muted">
-          {kpi.label}
-        </p>
-      </div>
+      <p className="t-eyebrow truncate">{kpi.label}</p>
 
-      <div className="mt-2 flex items-end justify-between gap-3">
+      <div className="mt-2.5 flex items-end justify-between gap-3">
         <div className="min-w-0">
-          <p
-            className="truncate text-[26px] leading-none font-semibold tracking-tight text-ink"
-            title={formatMoneyWhole(kpi.value)}
-          >
+          <p className="t-figure truncate tnum" title={formatMoneyWhole(kpi.value)}>
             {formatMoneyCompact(kpi.value)}
           </p>
           {delta !== undefined ? (
-            <p className="mt-2 flex items-center gap-1.5 text-[11px]">
+            <p className="mt-2.5 flex items-center gap-1.5 text-[11px]">
               <span
                 className={cn(
-                  "inline-flex items-center gap-0.5 font-medium tnum",
+                  "inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 font-medium tnum",
                   isFavourable === undefined
-                    ? "text-ink-secondary"
+                    ? "bg-surface-2 text-ink-secondary"
                     : isFavourable
-                      ? "text-delta-up"
-                      : "text-delta-down",
+                      ? "bg-good/10 text-delta-up"
+                      : "bg-critical/10 text-delta-down",
                 )}
               >
                 <DeltaIcon className="size-3" aria-hidden />
@@ -54,30 +47,26 @@ export function KpiTile({ kpi, comparisonLabel }: { kpi: Kpi; comparisonLabel: s
         {kpi.trend ? (
           <Sparkline
             values={kpi.trend}
-            stroke={
-              isFavourable === false ? "var(--series-2)" : "var(--series-1)"
-            }
+            stroke={isFavourable === false ? "var(--series-2)" : "var(--series-1)"}
           />
         ) : null}
       </div>
 
       {kpi.caption ? (
-        <p className="mt-3 truncate border-t border-hairline pt-2.5 text-[11px] text-ink-secondary">
-          {kpi.caption}
-        </p>
+        <p className="t-caption mt-3.5 truncate border-t border-hairline pt-2.5">{kpi.caption}</p>
       ) : null}
     </>
   );
 
   const shell =
-    "flex min-w-0 flex-col rounded-xl border border-hairline bg-surface p-4 shadow-[0_1px_2px_rgba(11,11,11,0.04)]";
+    "flex min-w-0 flex-col rounded-[10px] border border-hairline bg-surface p-4 shadow-panel";
 
   if (!kpi.href) return <div className={shell}>{body}</div>;
 
   return (
     <Link
       href={kpi.href}
-      className={cn(shell, "transition-colors hover:border-hairline-strong hover:bg-surface-2/40")}
+      className={cn(shell, "transition-colors hover:border-hairline-strong hover:bg-surface-raised")}
     >
       {body}
     </Link>

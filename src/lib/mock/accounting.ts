@@ -26,8 +26,8 @@ import type {
  */
 
 export const MOCK_ACCOUNTS: Account[] = [
-  { id: "a-1000", code: "1000", name: "Assets", type: "asset", group: "Assets", level: 0, isGroup: true, openingBalance: 4_12_60_000, balance: 4_58_94_300, side: "debit", isActive: true },
-  { id: "a-1100", code: "1100", name: "Current Assets", type: "asset", group: "Assets", level: 1, isGroup: true, openingBalance: 3_68_20_000, balance: 4_02_18_600, side: "debit", isActive: true },
+  { id: "a-1000", code: "1000", name: "Assets", type: "asset", group: "Assets", level: 0, isGroup: true, openingBalance: 4_64_52_800, balance: 5_15_72_225, side: "debit", isActive: true },
+  { id: "a-1100", code: "1100", name: "Current Assets", type: "asset", group: "Assets", level: 1, isGroup: true, openingBalance: 4_20_12_800, balance: 4_58_96_525, side: "debit", isActive: true },
   { id: "a-1110", code: "1110", name: "Cash in Hand", type: "asset", group: "Current Assets", level: 2, isGroup: false, openingBalance: 2_40_000, balance: 3_18_400, side: "debit", isActive: true, isBankOrCash: true },
   { id: "a-1115", code: "1115", name: "Petty Cash - Head Office", type: "asset", group: "Current Assets", level: 2, isGroup: false, openingBalance: 60_000, balance: 42_300, side: "debit", isActive: true, isBankOrCash: true },
   { id: "a-1120", code: "1120", name: "HDFC Bank - Current 4411", type: "asset", group: "Current Assets", level: 2, isGroup: false, openingBalance: 48_10_000, balance: 62_84_200, side: "debit", isActive: true, isBankOrCash: true },
@@ -45,9 +45,9 @@ export const MOCK_ACCOUNTS: Account[] = [
   { id: "a-2300", code: "2300", name: "Accrued Expenses", type: "liability", group: "Liabilities", level: 1, isGroup: false, openingBalance: 6_40_000, balance: 8_18_650, side: "credit", isActive: true },
   { id: "a-2400", code: "2400", name: "Short-term Borrowings", type: "liability", group: "Liabilities", level: 1, isGroup: false, openingBalance: 81_40_000, balance: 92_23_700, side: "credit", isActive: true },
 
-  { id: "a-3000", code: "3000", name: "Equity", type: "equity", group: "Equity", level: 0, isGroup: true, openingBalance: 1_90_00_000, balance: 2_04_18_000, side: "credit", isActive: true },
+  { id: "a-3000", code: "3000", name: "Equity", type: "equity", group: "Equity", level: 0, isGroup: true, openingBalance: 1_72_03_300, balance: 1_69_59_375, side: "credit", isActive: true },
   { id: "a-3100", code: "3100", name: "Share Capital", type: "equity", group: "Equity", level: 1, isGroup: false, openingBalance: 1_50_00_000, balance: 1_50_00_000, side: "credit", isActive: true },
-  { id: "a-3200", code: "3200", name: "Retained Earnings", type: "equity", group: "Equity", level: 1, isGroup: false, openingBalance: 40_00_000, balance: 54_18_000, side: "credit", isActive: true },
+  { id: "a-3200", code: "3200", name: "Retained Earnings", type: "equity", group: "Equity", level: 1, isGroup: false, openingBalance: 22_03_300, balance: 19_59_375, side: "credit", isActive: true },
 
   { id: "a-4000", code: "4000", name: "Income", type: "income", group: "Income", level: 0, isGroup: true, openingBalance: 0, balance: 14_86_42_000, side: "credit", isActive: true },
   { id: "a-4100", code: "4100", name: "Sales - Goods", type: "income", group: "Income", level: 1, isGroup: false, openingBalance: 0, balance: 14_18_60_000, side: "credit", isActive: true },
@@ -389,7 +389,7 @@ export const MOCK_TRIAL_BALANCE: TrialBalanceRow[] = [
   { accountCode: "2300", accountName: "Accrued Expenses", type: "liability", openingDebit: 0, openingCredit: 6_40_000, periodDebit: 2_18_400, periodCredit: 3_97_050, closingDebit: 0, closingCredit: 8_18_650 },
   { accountCode: "2400", accountName: "Short-term Borrowings", type: "liability", openingDebit: 0, openingCredit: 81_40_000, periodDebit: 4_16_300, periodCredit: 15_00_000, closingDebit: 0, closingCredit: 92_23_700 },
   { accountCode: "3100", accountName: "Share Capital", type: "equity", openingDebit: 0, openingCredit: 1_50_00_000, periodDebit: 0, periodCredit: 0, closingDebit: 0, closingCredit: 1_50_00_000 },
-  { accountCode: "3200", accountName: "Retained Earnings", type: "equity", openingDebit: 0, openingCredit: 40_00_000, periodDebit: 0, periodCredit: 14_18_000, closingDebit: 0, closingCredit: 54_18_000 },
+  { accountCode: "3200", accountName: "Retained Earnings", type: "equity", openingDebit: 0, openingCredit: 22_03_300, periodDebit: 2_43_925, periodCredit: 0, closingDebit: 0, closingCredit: 19_59_375 },
   { accountCode: "4100", accountName: "Sales - Goods", type: "income", openingDebit: 0, openingCredit: 12_32_18_000, periodDebit: 0, periodCredit: 1_86_42_000, closingDebit: 0, closingCredit: 14_18_60_000 },
   { accountCode: "4200", accountName: "Sales - Services", type: "income", openingDebit: 0, openingCredit: 64_18_000, periodDebit: 0, periodCredit: 8_22_000, closingDebit: 0, closingCredit: 72_40_000 },
   { accountCode: "4300", accountName: "Sales Returns & Discounts", type: "income", openingDebit: 3_43_400, openingCredit: 0, periodDebit: 1_14_600, periodCredit: 0, closingDebit: 4_58_000, closingCredit: 0 },

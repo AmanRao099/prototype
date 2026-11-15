@@ -2,8 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { RankedBars } from "@/components/charts/ranked-bars";
-import { Badge } from "@/components/ui/badge";
-import { DataTable, type Column } from "@/components/ui/data-table";
+import { CellStack, DataTable, type Column } from "@/components/ui/data-table";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { StatusPill } from "@/components/ui/status-pill";
 import { Tabs } from "@/components/ui/tabs";
@@ -85,14 +84,7 @@ export function PartyLedgerView({
     {
       key: "name",
       header: partyNoun,
-      cell: (party) => (
-        <span>
-          <span className="block font-medium text-ink">{party.name}</span>
-          <span className="block text-[10.5px] text-ink-muted">
-            {party.code} - {party.contact}
-          </span>
-        </span>
-      ),
+      cell: (party) => <CellStack primary={party.name} secondary={`${party.code} · ${party.contact}`} />,
     },
     { key: "phone", header: "Contact", hideBelow: "lg", cell: (party) => party.phone },
     {
@@ -155,7 +147,11 @@ export function PartyLedgerView({
       align: "right",
       hideBelow: "md",
       cell: (party) =>
-        party.isActive ? <Badge tone="good">Active</Badge> : <Badge tone="neutral">On hold</Badge>,
+        party.isActive ? (
+          <span className="text-ink-secondary">Active</span>
+        ) : (
+          <span className="text-ink-muted">On hold</span>
+        ),
     },
   ];
 
@@ -163,12 +159,7 @@ export function PartyLedgerView({
     {
       key: "number",
       header: documentNoun,
-      cell: (document) => (
-        <span>
-          <span className="block font-medium text-ink">{document.number}</span>
-          <span className="block text-[10.5px] text-ink-muted">{formatDate(document.date)}</span>
-        </span>
-      ),
+      cell: (document) => <CellStack primary={document.number} secondary={formatDate(document.date)} />,
     },
     { key: "party", header: partyNoun, cell: (document) => document.party },
     {
@@ -243,7 +234,7 @@ export function PartyLedgerView({
           </PanelBody>
         </Panel>
 
-        <Panel>
+        <Panel className="self-start">
           <PanelHeader title="Ageing" subtitle="Balance by days outstanding" />
           <PanelBody>
             <RankedBars
