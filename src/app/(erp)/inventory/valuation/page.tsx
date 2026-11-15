@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import { ValuationView } from "./valuation-view";
 import { PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
-import { getValuation, getWarehouses } from "@/lib/api/client";
+import {
+  getLandedCosts,
+  getRevaluations,
+  getStandardCosts,
+  getValuation,
+  getWarehouses,
+} from "@/lib/api/client";
 import { formatMoneyCompact, toNumber } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Valuation & Costing" };
@@ -10,7 +16,13 @@ export const metadata: Metadata = { title: "Valuation & Costing" };
 export const instant = false;
 
 export default async function ValuationPage() {
-  const [rows, warehouses] = await Promise.all([getValuation(), getWarehouses()]);
+  const [rows, warehouses, standardCosts, revaluations, landedCosts] = await Promise.all([
+    getValuation(),
+    getWarehouses(),
+    getStandardCosts(),
+    getRevaluations(),
+    getLandedCosts(),
+  ]);
 
   const totalValue = warehouses.reduce((sum, warehouse) => sum + toNumber(warehouse.stockValue), 0);
   const wavg = rows.reduce(
@@ -28,7 +40,7 @@ export default async function ValuationPage() {
       <PageHeader
         title="Valuation & Costing"
         subtitle="Closing value by costing method"
-        note="FIFO and weighted average in Phase 1. Standard costing, revaluation runs and full landed-cost apportionment across shipments are Phase 2."
+        note="Phase 2 adds standard-cost variance, revaluation runs and landed-cost apportionment across shipments. FIFO and weighted average remain the Phase 1 bases, and the costing method itself stays a company setting."
         secondaryActions={[{ label: "Export valuation" }]}
       />
 
@@ -59,7 +71,12 @@ export default async function ValuationPage() {
       />
 
 
-      <ValuationView rows={rows} />
+      <ValuationView
+        rows={rows}
+        standardCosts={standardCosts}
+        revaluations={revaluations}
+        landedCosts={landedCosts}
+      />
     </div>
   );
 }

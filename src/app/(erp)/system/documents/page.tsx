@@ -3,14 +3,17 @@ import { Upload } from "lucide-react";
 import { DocumentsView } from "./documents-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
-import { getDocuments } from "@/lib/api/client";
+import { getDocumentMetadata, getDocuments } from "@/lib/api/client";
 
 export const metadata: Metadata = { title: "Documents" };
 
 export const instant = false;
 
 export default async function DocumentsPage() {
-  const documents = await getDocuments();
+  const [documents, { tags, versions }] = await Promise.all([
+    getDocuments(),
+    getDocumentMetadata(),
+  ]);
 
   const totalKb = documents.reduce((sum, document) => sum + document.sizeKb, 0);
   const restricted = documents.filter((document) => document.access !== "all_users").length;
@@ -21,7 +24,7 @@ export default async function DocumentsPage() {
       <PageHeader
         title="Documents"
         subtitle="Attachments and access control"
-        note="Attachment, search and access control in Phase 1. Versioning and document lifecycle are Phase 2."
+        note="Phase 2 adds tag-aware search and version history: replacing a file keeps the previous copy with who changed it and why."
         actions={<ActionButton variant="primary" icon={<Upload className="size-3.5" />}>Upload document</ActionButton>}
       />
 
@@ -43,15 +46,15 @@ export default async function DocumentsPage() {
             caption: "Files limited to finance, managers or named users",
           },
           {
-            label: "Retention policy",
-            value: "7 years",
-            caption: "Applies to statutory accounting documents",
+            label: "Versioned files",
+            value: String(Object.keys(versions).length),
+            caption: "Earlier copies kept with their change note",
             tone: "muted",
           },
         ]}
       />
 
-      <DocumentsView documents={documents} />
+      <DocumentsView documents={documents} tags={tags} versions={versions} />
     </div>
   );
 }

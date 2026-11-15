@@ -3,7 +3,12 @@ import { Plus } from "lucide-react";
 import { ApprovalsView } from "./approvals-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
-import { getApprovalRules, getDashboard } from "@/lib/api/client";
+import {
+  getApprovalDelegations,
+  getApprovalHistory,
+  getApprovalRules,
+  getDashboard,
+} from "@/lib/api/client";
 import { formatMoneyCompact, toNumber } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Approval Workflow" };
@@ -11,7 +16,12 @@ export const metadata: Metadata = { title: "Approval Workflow" };
 export const instant = false;
 
 export default async function ApprovalsPage() {
-  const [dashboard, rules] = await Promise.all([getDashboard("mtd"), getApprovalRules()]);
+  const [dashboard, rules, delegations, history] = await Promise.all([
+    getDashboard("mtd"),
+    getApprovalRules(),
+    getApprovalDelegations(),
+    getApprovalHistory(),
+  ]);
   const requests = dashboard.approvals;
 
   const value = requests.reduce((sum, request) => sum + toNumber(request.amount ?? 0), 0);
@@ -26,7 +36,7 @@ export default async function ApprovalsPage() {
       <PageHeader
         title="Approval Workflow"
         subtitle="Documents waiting on a decision"
-        note="Basic approval states in Phase 1. Conditional matrices and delegation are Phase 2."
+        note="Phase 2 adds delegation and the full approval history: every decision records the level, the approver, any delegate who acted for them, the comment and the elapsed time."
         actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New approval rule</ActionButton>}
       />
 
@@ -49,15 +59,20 @@ export default async function ApprovalsPage() {
             caption: `${multiLevel} rules use more than one level`,
           },
           {
-            label: "Deferred to Phase 2",
-            value: String(rules.length - activeRules),
-            caption: "Delegation and conditional matrices",
+            label: "Delegations active",
+            value: String(delegations.filter((entry) => entry.status === "active").length),
+            caption: `${delegations.filter((entry) => entry.status === "scheduled").length} scheduled ahead`,
             tone: "muted",
           },
         ]}
       />
 
-      <ApprovalsView requests={requests} rules={rules} />
+      <ApprovalsView
+        requests={requests}
+        rules={rules}
+        delegations={delegations}
+        history={history}
+      />
     </div>
   );
 }

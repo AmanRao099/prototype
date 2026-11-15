@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { CellStack, DataTable, type Column } from "@/components/ui/data-table";
-import { Panel } from "@/components/ui/panel";
 import { ResultCount, Toolbar } from "@/components/ui/toolbar";
 import { formatDateTime } from "@/lib/format";
-import type { AuditAction, AuditEvent } from "@/lib/types";
+import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
+import type { AuditAction, AuditEvent, AuditFieldChange } from "@/lib/types";
 
 const ACTION_LABEL: Record<AuditAction, string> = {
   create: "Created",
@@ -29,10 +29,17 @@ const ACTION_DOT: Record<AuditAction, string> = {
   settings: "bg-series-2",
 };
 
-export function AuditView({ events }: { events: AuditEvent[] }) {
+export function AuditView({
+  events,
+  changes,
+}: {
+  events: AuditEvent[];
+  changes: Record<string, AuditFieldChange[]>;
+}) {
   const [search, setSearch] = useState("");
   const [action, setAction] = useState("all");
   const [module, setModule] = useState("all");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const modules = Array.from(new Set(events.map((event) => event.module))).sort();
   const needle = search.trim().toLowerCase();
@@ -70,7 +77,22 @@ export function AuditView({ events }: { events: AuditEvent[] }) {
     {
       key: "record",
       header: "Record",
-      cell: (event) => <CellStack primary={event.reference} secondary={event.entity} />,
+      cell: (event) => {
+        const diff = changes[event.id];
+        if (!diff) return <CellStack primary={event.reference} secondary={event.entity} />;
+        return (
+          <button
+            type="button"
+            onClick={() => setSelectedId(event.id === selectedId ? null : event.id)}
+            className="text-left"
+          >
+            <CellStack
+              primary={event.reference}
+              secondary={`${event.entity} · ${diff.length} field${diff.length === 1 ? "" : "s"} changed`}
+            />
+          </button>
+        );
+      },
     },
     { key: "module", header: "Module", hideBelow: "lg", cell: (event) => event.module },
     {
@@ -98,7 +120,11 @@ export function AuditView({ events }: { events: AuditEvent[] }) {
     },
   ];
 
+  const selected = events.find((event) => event.id === selectedId);
+  const selectedChanges = selectedId ? (changes[selectedId] ?? []) : [];
+
   return (
+    <div className="flex flex-col gap-3">
     <Panel>
       <Toolbar
         search={search}
@@ -132,5 +158,52 @@ export function AuditView({ events }: { events: AuditEvent[] }) {
 
       <DataTable columns={columns} rows={rows} minWidth="min-w-[1100px]" />
     </Panel>
+
+    {selected ? (
+      <Panel>
+        <PanelHeader
+          title={`${selected.reference} · field changes`}
+          subtitle={`${selected.user} · ${formatDateTime(selected.at)} · ${selected.ipAddress}`}
+          action={
+            <button
+              type="button"
+              onClick={() => setSelectedId(null)}
+              className="rounded-md px-2 py-1 text-[11px] font-medium text-ink-muted hover:bg-surface-2 hover:text-ink"
+            >
+              Close
+            </button>
+          }
+        />
+        <PanelBody flush>
+          <table className="w-full border-collapse text-[12.5px]">
+            <thead>
+              <tr className="border-b border-hairline text-left">
+                <th scope="col" className="px-4 py-2 text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase">
+                  Field
+                </th>
+                <th scope="col" className="px-3 py-2 text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase">
+                  Before
+                </th>
+                <th scope="col" className="px-4 py-2 text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase">
+                  After
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedChanges.map((change) => (
+                <tr key={change.field} className="border-b border-hairline/60 last:border-0">
+                  <td className="px-4 py-2 text-ink">{change.field}</td>
+                  <td className="px-3 py-2 text-delta-down line-through decoration-delta-down/40">
+                    {change.before}
+                  </td>
+                  <td className="px-4 py-2 text-ink">{change.after}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </PanelBody>
+      </Panel>
+    ) : null}
+    </div>
   );
 }

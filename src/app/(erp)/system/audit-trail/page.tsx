@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { AuditView } from "./audit-view";
 import { PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
-import { getAuditEvents } from "@/lib/api/client";
+import { getAuditChanges, getAuditEvents } from "@/lib/api/client";
 
 export const metadata: Metadata = { title: "Audit Trail" };
 
 export const instant = false;
 
 export default async function AuditTrailPage() {
-  const events = await getAuditEvents();
+  const [events, changes] = await Promise.all([getAuditEvents(), getAuditChanges()]);
 
   const today = events.filter((event) => event.at.startsWith("2026-11-15")).length;
   const postings = events.filter((event) => event.action === "post" || event.action === "approve").length;
@@ -21,6 +21,7 @@ export default async function AuditTrailPage() {
       <PageHeader
         title="Audit Trail"
         subtitle="Who changed what, and when"
+        note="Phase 2 adds the field-level record: select an event with changed fields to see the before and after values side by side."
         secondaryActions={[{ label: "Export log" }]}
       />
 
@@ -51,7 +52,7 @@ export default async function AuditTrailPage() {
         ]}
       />
 
-      <AuditView events={events} />
+      <AuditView events={events} changes={changes} />
     </div>
   );
 }

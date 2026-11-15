@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { VatView } from "./vat-view";
 import { PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
-import { getVatReturn } from "@/lib/api/client";
+import { getTaxRules, getVatAdjustments, getVatReturn } from "@/lib/api/client";
 import { formatDate, formatMoneyCompact, toNumber } from "@/lib/format";
 import { AS_OF } from "@/lib/ageing";
 
@@ -11,7 +11,11 @@ export const metadata: Metadata = { title: "Tax & VAT" };
 export const instant = false;
 
 export default async function TaxVatPage() {
-  const { boxes, periods, codes } = await getVatReturn();
+  const [{ boxes, periods, codes }, rules, adjustments] = await Promise.all([
+    getVatReturn(),
+    getTaxRules(),
+    getVatAdjustments(),
+  ]);
 
   const current = periods[0];
   const outputVat = toNumber(current?.outputVat ?? 0);
@@ -55,7 +59,7 @@ export default async function TaxVatPage() {
         ]}
       />
 
-      <VatView boxes={boxes} periods={periods} codes={codes} />
+      <VatView boxes={boxes} periods={periods} codes={codes} rules={rules} adjustments={adjustments} />
     </div>
   );
 }

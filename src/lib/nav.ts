@@ -200,6 +200,18 @@ export const NAV_SECTIONS: NavSection[] = [
         keywords: "adjustment damage expiry physical count reconciliation variance",
       },
       {
+        label: "Batches & serials",
+        moduleName: "Batch, Serial & Expiry Traceability",
+        href: "/inventory/traceability",
+        icon: "ScanBarcode",
+        phase: "phase2",
+        features:
+          "Batch register with shelf life; serial register with warranty; quarantine and expiry handling; full movement trace per batch; expiry and recall reporting",
+        workbookCategory: "Inventory & Stock",
+        app: "inventory",
+        keywords: "batch serial expiry lot traceability recall warranty quarantine shelf life",
+      },
+      {
         label: "Valuation",
         moduleName: "Stock Valuation & Costing",
         href: "/inventory/valuation",
@@ -268,6 +280,18 @@ export const NAV_SECTIONS: NavSection[] = [
         app: "accounting",
         badge: "Bank rec. Phase 2",
         keywords: "cash bank receipt payment petty cash reconciliation day book",
+      },
+      {
+        label: "Bank reconciliation",
+        moduleName: "Bank Reconciliation",
+        href: "/accounting/bank-reconciliation",
+        icon: "GitCompare",
+        phase: "phase2",
+        features:
+          "Statement import; automatic match suggestions; manual matching; outstanding cheques and deposits in transit; unbooked bank items; reconciliation statement and sign-off",
+        workbookCategory: "Accounting & Finance",
+        app: "accounting",
+        keywords: "reconciliation bank statement match outstanding cheque clearing",
       },
       {
         label: "Expenses",

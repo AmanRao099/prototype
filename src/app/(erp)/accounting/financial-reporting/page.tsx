@@ -1,164 +1,154 @@
 import type { Metadata } from "next";
-import { ReportingView } from "./reporting-view";
-import { RankedBars } from "@/components/charts/ranked-bars";
+import { ReportingView, type AgeingAnalytics, type AgeingMatrixRow } from "./reporting-view";
 import { PageHeader } from "@/components/ui/page-header";
-import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { SummaryStrip } from "@/components/ui/summary-strip";
-import { getReportCatalogue, getTrialBalance } from "@/lib/api/client";
-import { formatMoneyCompact, formatMoneyWhole, toNumber } from "@/lib/format";
-import type { AccountType, TrialBalanceRow } from "@/lib/types";
+import {
+  getCustomers,
+  getPurchaseInvoices,
+  getReportCatalogue,
+  getSalesInvoices,
+  getSuppliers,
+  getTrialBalance,
+} from "@/lib/api/client";
+import { AS_OF, daysOverdue } from "@/lib/ageing";
+import { formatMoneyCompact, toNumber } from "@/lib/format";
+import { buildBalanceSheet, buildCashFlow, buildProfitAndLoss } from "@/lib/statements";
 
 export const metadata: Metadata = { title: "Financial Reporting" };
 
 export const instant = false;
 
-function closingFor(rows: TrialBalanceRow[], type: AccountType): number {
-  return rows
-    .filter((row) => row.type === type)
-    .reduce(
-      (sum, row) =>
-        sum +
-        (type === "income" || type === "liability" || type === "equity"
-          ? toNumber(row.closingCredit) - toNumber(row.closingDebit)
-          : toNumber(row.closingDebit) - toNumber(row.closingCredit)),
-      0,
-    );
+const PERIOD_LABEL = "November 2026";
+const BUCKETS = ["Not due", "1-30 days", "31-60 days", "61-90 days", "90+ days"];
+/** Days elapsed in the financial year, used for DSO and DPO. */
+const FY_DAYS_ELAPSED = Math.round(
+  (AS_OF.getTime() - new Date("2026-04-01T00:00:00+05:30").getTime()) / 86_400_000,
+);
+
+function bucketIndex(dueDate: string): number {
+  const overdue = daysOverdue(dueDate);
+  if (overdue === 0) return 0;
+  if (overdue <= 30) return 1;
+  if (overdue <= 60) return 2;
+  if (overdue <= 90) return 3;
+  return 4;
+}
+
+function buildMatrix(
+  documents: Array<{ party: string; dueDate: string; balance: number }>,
+): AgeingMatrixRow[] {
+  const byParty = new Map<string, AgeingMatrixRow>();
+
+  for (const document of documents) {
+    if (document.balance <= 0) continue;
+    const row =
+      byParty.get(document.party) ??
+      ({
+        id: document.party,
+        party: document.party,
+        buckets: BUCKETS.map(() => 0),
+        total: 0,
+        oldestDays: 0,
+      } satisfies AgeingMatrixRow);
+
+    row.buckets[bucketIndex(document.dueDate)] += document.balance;
+    row.total += document.balance;
+    row.oldestDays = Math.max(row.oldestDays, daysOverdue(document.dueDate));
+    byParty.set(document.party, row);
+  }
+
+  return [...byParty.values()].sort((a, b) => b.total - a.total);
 }
 
 export default async function FinancialReportingPage() {
-  const [trialBalance, reports] = await Promise.all([getTrialBalance(), getReportCatalogue()]);
+  const [trialBalance, reports, salesInvoices, purchaseInvoices, customers, suppliers] =
+    await Promise.all([
+      getTrialBalance(),
+      getReportCatalogue(),
+      getSalesInvoices(),
+      getPurchaseInvoices(),
+      getCustomers(),
+      getSuppliers(),
+    ]);
 
-  const income = closingFor(trialBalance, "income");
-  const expenses = closingFor(trialBalance, "expense");
-  const assets = closingFor(trialBalance, "asset");
-  const liabilities = closingFor(trialBalance, "liability");
-  const equity = closingFor(trialBalance, "equity");
-  const netProfit = income - expenses;
+  const profitAndLoss = buildProfitAndLoss(trialBalance);
+  const balanceSheet = buildBalanceSheet(trialBalance, profitAndLoss.netProfitYtd);
+  const cashFlow = buildCashFlow(trialBalance, profitAndLoss.netProfitPeriod);
 
-  const totalDebit = trialBalance.reduce((sum, row) => sum + toNumber(row.closingDebit), 0);
-  const totalCredit = trialBalance.reduce((sum, row) => sum + toNumber(row.closingCredit), 0);
+  const receivableDocuments = salesInvoices
+    .filter((invoice) => invoice.invoiceType !== "credit_note" && toNumber(invoice.balance) > 0)
+    .map((invoice) => ({
+      party: invoice.customer,
+      dueDate: invoice.dueDate,
+      balance: toNumber(invoice.balance),
+    }));
+  const payableDocuments = purchaseInvoices
+    .filter((invoice) => invoice.invoiceType !== "debit_note" && toNumber(invoice.balance) > 0)
+    .map((invoice) => ({
+      party: invoice.supplier,
+      dueDate: invoice.dueDate,
+      balance: toNumber(invoice.balance),
+    }));
 
-  const expenseBars = trialBalance
-    .filter((row) => row.type === "expense")
-    .map((row) => ({
-      id: row.accountCode,
-      label: row.accountName,
-      value: toNumber(row.closingDebit),
-    }))
-    .sort((a, b) => b.value - a.value);
+  const outstanding = customers.reduce((sum, party) => sum + toNumber(party.outstanding), 0);
+  const overdue = customers.reduce((sum, party) => sum + toNumber(party.overdue), 0);
+  const payable = suppliers.reduce((sum, party) => sum + toNumber(party.outstanding), 0);
+  const cogsYtd = toNumber(trialBalance.find((row) => row.accountCode === "5100")?.closingDebit ?? 0);
+
+  const ageing: AgeingAnalytics = {
+    bucketLabels: BUCKETS,
+    receivables: buildMatrix(receivableDocuments),
+    payables: buildMatrix(payableDocuments),
+    dso: (outstanding / profitAndLoss.revenueYtd) * FY_DAYS_ELAPSED,
+    dpo: (payable / cogsYtd) * FY_DAYS_ELAPSED,
+    overdueSharePct: (overdue / outstanding) * 100,
+  };
 
   return (
     <div className="page-stack">
       <PageHeader
         title="Financial Reporting"
-        subtitle="Trial balance, statements and registers"
-        note="Core statements and registers in Phase 1. Cash flow, custom report building and advanced analytics are later phases."
+        subtitle="Statements, trial balance, ageing and registers"
+        note="Phase 2 adds profit & loss, balance sheet, cash flow and ageing analytics. Every statement is derived from the trial balance, so a statement cannot disagree with the ledger behind it."
         secondaryActions={[{ label: "Print" }, { label: "Export to Excel" }]}
       />
 
       <SummaryStrip
         items={[
           {
-            label: "Income",
-            value: formatMoneyCompact(income),
-            caption: "Net of sales returns and discounts",
+            label: "Revenue (year to date)",
+            value: formatMoneyCompact(profitAndLoss.revenueYtd),
+            caption: `${formatMoneyCompact(profitAndLoss.revenuePeriod)} in ${PERIOD_LABEL}`,
           },
           {
-            label: "Expenses",
-            value: formatMoneyCompact(expenses),
-            caption: "Cost of sales and operating expenses",
+            label: "Net profit (year to date)",
+            value: formatMoneyCompact(profitAndLoss.netProfitYtd),
+            caption: `${((profitAndLoss.netProfitYtd / profitAndLoss.revenueYtd) * 100).toFixed(1)}% net margin`,
+            tone: profitAndLoss.netProfitYtd >= 0 ? "good" : "critical",
           },
           {
-            label: "Net profit",
-            value: formatMoneyCompact(netProfit),
-            caption: `${((netProfit / income) * 100).toFixed(1)}% of income`,
-            tone: netProfit >= 0 ? "good" : "critical",
+            label: "Operating cash flow",
+            value: formatMoneyCompact(cashFlow.operating),
+            caption: `${PERIOD_LABEL}, indirect method`,
           },
           {
-            label: "Trial balance",
-            value: Math.abs(totalDebit - totalCredit) < 1 ? "Balanced" : "Out of balance",
-            caption: `Dr ${formatMoneyCompact(totalDebit)} / Cr ${formatMoneyCompact(totalCredit)}`,
-            tone: Math.abs(totalDebit - totalCredit) < 1 ? "good" : "critical",
+            label: "Balance sheet",
+            value: balanceSheet.balanced ? "Balanced" : "Out of balance",
+            caption: `Assets ${formatMoneyCompact(balanceSheet.totalAssets)}`,
+            tone: balanceSheet.balanced ? "good" : "critical",
           },
         ]}
       />
 
-      <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
-        <Panel>
-          <PanelHeader title="Profit & loss summary" subtitle="Financial year to date" />
-          <PanelBody>
-            <dl className="space-y-2 text-[12px]">
-              <div className="flex justify-between gap-3">
-                <dt className="text-ink-secondary">Income</dt>
-                <dd className="font-medium tnum text-ink">{formatMoneyWhole(income)}</dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-ink-secondary">Cost of goods sold</dt>
-                <dd className="font-medium tnum text-ink">
-                  {formatMoneyWhole(
-                    toNumber(
-                      trialBalance.find((row) => row.accountCode === "5100")?.closingDebit ?? 0,
-                    ),
-                  )}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-3 border-t border-hairline pt-2">
-                <dt className="text-ink-secondary">Operating expenses</dt>
-                <dd className="font-medium tnum text-ink">
-                  {formatMoneyWhole(
-                    expenses -
-                      toNumber(
-                        trialBalance.find((row) => row.accountCode === "5100")?.closingDebit ?? 0,
-                      ),
-                  )}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-3 border-t border-hairline pt-2 text-[13px]">
-                <dt className="font-medium text-ink">Net profit</dt>
-                <dd className="font-semibold tnum text-ink">{formatMoneyWhole(netProfit)}</dd>
-              </div>
-            </dl>
-          </PanelBody>
-        </Panel>
-
-        <Panel>
-          <PanelHeader title="Balance sheet position" subtitle="As at the reporting date" />
-          <PanelBody>
-            <dl className="space-y-2 text-[12px]">
-              <div className="flex justify-between gap-3">
-                <dt className="text-ink-secondary">Total assets</dt>
-                <dd className="font-medium tnum text-ink">{formatMoneyWhole(assets)}</dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-ink-secondary">Total liabilities</dt>
-                <dd className="font-medium tnum text-ink">{formatMoneyWhole(liabilities)}</dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-ink-secondary">Equity</dt>
-                <dd className="font-medium tnum text-ink">{formatMoneyWhole(equity)}</dd>
-              </div>
-              <div className="flex justify-between gap-3 border-t border-hairline pt-2 text-[13px]">
-                <dt className="font-medium text-ink">Retained result</dt>
-                <dd className="font-semibold tnum text-ink">
-                  {formatMoneyWhole(assets - liabilities - equity)}
-                </dd>
-              </div>
-            </dl>
-          </PanelBody>
-          <PanelFooter>
-            <span>Current-year profit is carried into equity at year end</span>
-          </PanelFooter>
-        </Panel>
-
-        <Panel>
-          <PanelHeader title="Expense accounts" subtitle="Closing debit by account" />
-          <PanelBody>
-            <RankedBars bars={expenseBars} formatValue={formatMoneyCompact} />
-          </PanelBody>
-        </Panel>
-      </div>
-
-      <ReportingView trialBalance={trialBalance} reports={reports} />
+      <ReportingView
+        trialBalance={trialBalance}
+        reports={reports}
+        profitAndLoss={profitAndLoss}
+        balanceSheet={balanceSheet}
+        cashFlow={cashFlow}
+        ageing={ageing}
+        periodLabel={PERIOD_LABEL}
+      />
     </div>
   );
 }

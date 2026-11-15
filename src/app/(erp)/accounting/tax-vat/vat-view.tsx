@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { DataTable, type Column } from "@/components/ui/data-table";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { Tabs } from "@/components/ui/tabs";
+import { StatusPill } from "@/components/ui/status-pill";
 import { formatDate, formatMoneyWhole, toNumber } from "@/lib/format";
-import type { TaxCode, VatBox, VatReturnPeriod } from "@/lib/types";
+import type { TaxCode, TaxRule, VatAdjustment, VatBox, VatReturnPeriod } from "@/lib/types";
 
 const TREATMENT_LABEL: Record<VatBox["treatment"], string> = {
   standard: "Standard rated",
@@ -21,14 +22,31 @@ const STATUS_TONE: Record<VatReturnPeriod["status"], "neutral" | "warning" | "go
   filed: "good",
 };
 
+const ADJUSTMENT_LABEL: Record<VatAdjustment["kind"], string> = {
+  bad_debt_relief: "Bad debt relief",
+  credit_note: "Credit note",
+  correction: "Correction",
+  annual_true_up: "Annual true-up",
+};
+
+const APPLIES_LABEL: Record<TaxRule["appliesTo"], string> = {
+  sales: "Sales",
+  purchase: "Purchases",
+  both: "Both",
+};
+
 export function VatView({
   boxes,
   periods,
   codes,
+  rules,
+  adjustments,
 }: {
   boxes: VatBox[];
   periods: VatReturnPeriod[];
   codes: TaxCode[];
+  rules: TaxRule[];
+  adjustments: VatAdjustment[];
 }) {
   const [tab, setTab] = useState("return");
   const [periodId, setPeriodId] = useState(periods[0]?.id ?? "");
@@ -89,6 +107,98 @@ export function VatView({
     },
   ];
 
+  const ruleColumns: Array<Column<TaxRule>> = [
+    {
+      key: "rule",
+      header: "Rule",
+      cell: (rule) => (
+        <span>
+          <span className="block font-medium text-ink">{rule.name}</span>
+          <span className="block text-[10.5px] text-ink-muted">
+            Priority {rule.priority} · {APPLIES_LABEL[rule.appliesTo]}
+          </span>
+        </span>
+      ),
+    },
+    { key: "party", header: "Party location", hideBelow: "md", cell: (rule) => rule.partyLocation },
+    { key: "itemClass", header: "Item class", hideBelow: "lg", cell: (rule) => rule.itemClass },
+    {
+      key: "place",
+      header: "Place of supply",
+      hideBelow: "xl",
+      cell: (rule) => rule.placeOfSupply,
+    },
+    {
+      key: "code",
+      header: "Tax code",
+      align: "right",
+      cell: (rule) => <span className="font-medium text-ink">{rule.taxCode}</span>,
+    },
+    {
+      key: "state",
+      header: "State",
+      align: "right",
+      cell: (rule) =>
+        rule.isActive ? (
+          <Badge tone="good" dot>
+            Active
+          </Badge>
+        ) : (
+          <span className="text-ink-muted">Inactive</span>
+        ),
+    },
+  ];
+
+  const adjustmentColumns: Array<Column<VatAdjustment>> = [
+    {
+      key: "reference",
+      header: "Adjustment",
+      cell: (adjustment) => (
+        <span>
+          <span className="block font-medium text-ink">{adjustment.reference}</span>
+          <span className="block text-[10.5px] text-ink-muted">{formatDate(adjustment.date)}</span>
+        </span>
+      ),
+    },
+    {
+      key: "kind",
+      header: "Type",
+      cell: (adjustment) => ADJUSTMENT_LABEL[adjustment.kind],
+    },
+    { key: "period", header: "Period", hideBelow: "md", cell: (adjustment) => adjustment.periodLabel },
+    {
+      key: "reason",
+      header: "Reason",
+      hideBelow: "lg",
+      cell: (adjustment) => (
+        <span className="block max-w-[420px] truncate" title={adjustment.reason}>
+          {adjustment.reason}
+        </span>
+      ),
+    },
+    {
+      key: "amount",
+      header: "VAT effect",
+      align: "right",
+      cell: (adjustment) => (
+        <span
+          className={
+            adjustment.direction === "decrease" ? "font-medium text-delta-down" : "font-medium"
+          }
+        >
+          {adjustment.direction === "decrease" ? "-" : "+"}
+          {formatMoneyWhole(adjustment.amount)}
+        </span>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      align: "right",
+      cell: (adjustment) => <StatusPill status={adjustment.status} />,
+    },
+  ];
+
   const periodColumns: Array<Column<VatReturnPeriod & { id: string }>> = [
     { key: "label", header: "Period", cell: (row) => <span className="font-medium text-ink">{row.label}</span> },
     {
@@ -127,6 +237,8 @@ export function VatView({
         <Tabs
           tabs={[
             { id: "return", label: "Return workings" },
+            { id: "rules", label: "Tax rules", count: rules.length },
+            { id: "adjustments", label: "Adjustments", count: adjustments.length },
             { id: "codes", label: "Tax codes", count: codes.length },
             { id: "history", label: "Filing history", count: periods.length },
           ]}
@@ -241,6 +353,60 @@ export function VatView({
             </PanelFooter>
           </Panel>
         </div>
+      ) : null}
+
+      {tab === "rules" ? (
+        <Panel>
+          <PanelHeader
+            title="Tax determination rules"
+            subtitle="Evaluated in priority order; the first rule that matches sets the tax code on a line"
+          />
+          <DataTable columns={ruleColumns} rows={rules} minWidth="min-w-[900px]" />
+          <PanelFooter>
+            <span>
+              Place of supply drives the rate where a customer branch sits outside the supplying
+              branch state
+            </span>
+            <span className="text-ink-secondary">
+              {rules.filter((rule) => rule.isActive).length} active of {rules.length}
+            </span>
+          </PanelFooter>
+        </Panel>
+      ) : null}
+
+      {tab === "adjustments" ? (
+        <Panel>
+          <PanelHeader
+            title="VAT adjustments"
+            subtitle="Bad debt relief, credit notes, corrections and annual true-ups that move the return"
+          />
+          <DataTable
+            columns={adjustmentColumns}
+            rows={adjustments}
+            minWidth="min-w-[960px]"
+            footer={
+              <>
+                <td className="px-4 py-2" colSpan={4}>
+                  Net effect on the open return
+                </td>
+                <td className="px-3 py-2 text-right tnum">
+                  {formatMoneyWhole(
+                    adjustments
+                      .filter((adjustment) => adjustment.status === "posted")
+                      .reduce(
+                        (total, adjustment) =>
+                          total +
+                          (adjustment.direction === "increase" ? 1 : -1) *
+                            toNumber(adjustment.amount),
+                        0,
+                      ),
+                  )}
+                </td>
+                <td className="px-4 py-2" />
+              </>
+            }
+          />
+        </Panel>
       ) : null}
 
       {tab === "codes" ? (

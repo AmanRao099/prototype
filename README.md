@@ -168,6 +168,23 @@ client-view split and the same shared components.
 All 29 workbook modules now have a screen (28 module routes plus the dashboard). The catch-all
 scope page stays as a safety net for unknown routes.
 
+## Phase 2 — functional completion (front end)
+
+The proposal's Phase 2 list is built, on the same mock-data contract as Phase 1:
+
+| Item | Where | What it does |
+| --- | --- | --- |
+| Advanced bank reconciliation | `/accounting/bank-reconciliation` | Statement import, automatic match suggestions (by reference, by amount and date, by amount), manual matching, uncleared cheques and deposits in transit, unbooked bank items, and the signed-off working. Matching explains the gap between bank and books; the working only reaches nil when every line is classified. |
+| Deeper financial reports | `/accounting/financial-reporting` | Profit & loss, balance sheet and cash flow (indirect) **derived from the trial balance** in `src/lib/statements.ts`, plus ageing analytics with a party × bucket matrix, DSO and DPO. A statement cannot disagree with the ledger it came from. |
+| Expanded VAT configuration | `/accounting/tax-vat` | Tax determination rules evaluated in priority order (party location × item class × place of supply → tax code) and VAT adjustments: bad-debt relief, credit notes, corrections, annual true-ups. |
+| Costing enhancements | `/inventory/valuation` | Standard-cost variance with the exposure held in stock, revaluation runs with their P&L impact, and landed-cost apportionment across shipments by value, weight or quantity. |
+| Batch, serial and expiry | `/inventory/traceability` | Batch register with shelf life, quarantine and value at risk; serial register with warranty and customer; and a full movement trace per batch from receipt to write-off. |
+| Richer approvals | `/system/approvals` | Delegation with scope and date window, plus full approval history: every level, the approver, any delegate who acted for them, the comment and the elapsed time. |
+| Document search and audit detail | `/system/documents`, `/system/audit-trail` | Tag-aware search and version history with change notes; audit events expand to a field-level before/after diff. |
+
+Still open from the roadmap: expense-management depth (recurring schedules, department budgets) and
+Phase 3 multi-company consolidation.
+
 ## Layout and density rules
 
 Every screen is built from the same four parts, in the same order, with one rhythm

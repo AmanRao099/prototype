@@ -4,19 +4,41 @@ import { useState } from "react";
 import { Check, X } from "lucide-react";
 import { Badge, PhaseBadge, StatusChip } from "@/components/ui/badge";
 import { CellStack, DataTable, type Column } from "@/components/ui/data-table";
-import { Panel } from "@/components/ui/panel";
+import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { Tabs } from "@/components/ui/tabs";
 import { ResultCount, Toolbar } from "@/components/ui/toolbar";
-import { formatMoneyWhole, formatRelative } from "@/lib/format";
+import { formatDate, formatDateTime, formatMoneyWhole, formatRelative } from "@/lib/format";
 import { AS_OF } from "@/lib/ageing";
-import type { ApprovalRequest, ApprovalRule } from "@/lib/types";
+import type {
+  ApprovalDelegation,
+  ApprovalHistoryEntry,
+  ApprovalRequest,
+  ApprovalRule,
+} from "@/lib/types";
+import { cn } from "@/lib/utils";
+
+const DELEGATION_TONE = {
+  active: "good",
+  scheduled: "accent",
+  expired: "neutral",
+} as const;
+
+const OUTCOME_TONE = {
+  approved: "good",
+  rejected: "critical",
+  in_progress: "warning",
+} as const;
 
 export function ApprovalsView({
   requests,
   rules,
+  delegations,
+  history,
 }: {
   requests: ApprovalRequest[];
   rules: ApprovalRule[];
+  delegations: ApprovalDelegation[];
+  history: ApprovalHistoryEntry[];
 }) {
   const [tab, setTab] = useState("queue");
   const [search, setSearch] = useState("");
@@ -134,18 +156,62 @@ export function ApprovalsView({
     },
   ];
 
+  const delegationColumns: Array<Column<ApprovalDelegation>> = [
+    {
+      key: "from",
+      header: "Delegated by",
+      cell: (delegation) => (
+        <CellStack primary={delegation.fromUser} secondary={delegation.reason} />
+      ),
+    },
+    {
+      key: "to",
+      header: "Acting approver",
+      cell: (delegation) => <span className="text-ink">{delegation.toUser}</span>,
+    },
+    {
+      key: "scope",
+      header: "Scope",
+      hideBelow: "md",
+      cell: (delegation) => delegation.documentTypes.join(", "),
+    },
+    {
+      key: "window",
+      header: "Window",
+      hideBelow: "lg",
+      cell: (delegation) =>
+        `${formatDate(delegation.startsOn)} - ${formatDate(delegation.endsOn)}`,
+    },
+    {
+      key: "status",
+      header: "Status",
+      align: "right",
+      cell: (delegation) => (
+        <Badge tone={DELEGATION_TONE[delegation.status]} dot>
+          {delegation.status === "active"
+            ? "Active"
+            : delegation.status === "scheduled"
+              ? "Scheduled"
+              : "Expired"}
+        </Badge>
+      ),
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-3">
       <Tabs
         tabs={[
           { id: "queue", label: "Approval queue", count: requests.length },
           { id: "rules", label: "Rules", count: rules.length },
+          { id: "delegation", label: "Delegation", count: delegations.length },
+          { id: "history", label: "History", count: history.length },
         ]}
         active={tab}
         onChange={setTab}
       />
 
-      <Panel>
+      <Panel className={tab === "queue" || tab === "rules" ? "" : "hidden"}>
         {tab === "queue" ? (
           <>
             <Toolbar
@@ -178,6 +244,96 @@ export function ApprovalsView({
           <DataTable columns={ruleColumns} rows={rules} minWidth="min-w-[880px]" />
         )}
       </Panel>
+
+      {tab === "delegation" ? (
+        <Panel>
+          <PanelHeader
+            title="Delegation"
+            subtitle="Who may approve on someone else's behalf, and for how long"
+          />
+          <DataTable columns={delegationColumns} rows={delegations} minWidth="min-w-[860px]" />
+          <PanelFooter>
+            <span>A delegated decision records both the delegate and the original approver</span>
+            <span className="text-ink-secondary">
+              {delegations.filter((entry) => entry.status === "active").length} active now
+            </span>
+          </PanelFooter>
+        </Panel>
+      ) : null}
+
+      {tab === "history" ? (
+        <div className="flex flex-col gap-3">
+          {history.map((entry) => (
+            <Panel key={entry.id}>
+              <PanelHeader
+                title={`${entry.documentType} ${entry.reference}`}
+                subtitle={`${entry.party} · raised by ${entry.raisedBy} on ${formatDate(entry.raisedAt)}`}
+                action={
+                  <span className="flex items-center gap-2">
+                    {entry.amount !== undefined ? (
+                      <span className="text-[12px] font-medium tnum text-ink">
+                        {formatMoneyWhole(entry.amount)}
+                      </span>
+                    ) : null}
+                    <Badge tone={OUTCOME_TONE[entry.outcome]} dot>
+                      {entry.outcome === "approved"
+                        ? "Approved"
+                        : entry.outcome === "rejected"
+                          ? "Rejected"
+                          : "In progress"}
+                    </Badge>
+                  </span>
+                }
+              />
+              <PanelBody>
+                <ol className="relative space-y-3 border-l border-hairline pl-5">
+                  {entry.steps.map((step) => (
+                    <li key={step.level} className="relative">
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "absolute top-1.5 -left-[23px] size-2 rounded-full ring-4 ring-surface",
+                          step.decision === "approved"
+                            ? "bg-good"
+                            : step.decision === "rejected"
+                              ? "bg-critical"
+                              : "bg-warning",
+                        )}
+                      />
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <p className="text-[12.5px] text-ink">
+                          <span className="font-medium">Level {step.level}</span> · {step.approver}
+                          {step.actedFor ? (
+                            <span className="text-ink-muted"> acting for {step.actedFor}</span>
+                          ) : null}
+                        </p>
+                        <p className="text-[10.5px] text-ink-muted">
+                          {step.at ? formatDateTime(step.at) : "Waiting"}
+                        </p>
+                      </div>
+                      {step.comment ? (
+                        <p className="mt-1 text-[11.5px] text-ink-secondary">{step.comment}</p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ol>
+              </PanelBody>
+              {entry.completedAt ? (
+                <PanelFooter>
+                  <span>Completed {formatDateTime(entry.completedAt)}</span>
+                  <span className="text-ink-secondary">
+                    {Math.round(
+                      (new Date(entry.completedAt).getTime() - new Date(entry.raisedAt).getTime()) /
+                        3_600_000,
+                    )}{" "}
+                    hours end to end
+                  </span>
+                </PanelFooter>
+              ) : null}
+            </Panel>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

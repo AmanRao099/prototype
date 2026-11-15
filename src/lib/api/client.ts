@@ -46,11 +46,32 @@ import {
   MOCK_SECURITY_CONTROLS,
   MOCK_USERS,
 } from "@/lib/mock/system";
+import { MOCK_STATEMENT } from "@/lib/mock/reconciliation";
+import {
+  MOCK_LANDED_COSTS,
+  MOCK_REVALUATIONS,
+  MOCK_STANDARD_COSTS,
+  MOCK_TAX_RULES,
+  MOCK_VAT_ADJUSTMENTS,
+} from "@/lib/mock/phase2";
+import { MOCK_BATCHES, MOCK_SERIALS, MOCK_TRACE } from "@/lib/mock/traceability";
+import {
+  MOCK_APPROVAL_HISTORY,
+  MOCK_AUDIT_CHANGES,
+  MOCK_DELEGATIONS,
+  MOCK_DOCUMENT_TAGS,
+  MOCK_DOCUMENT_VERSIONS,
+} from "@/lib/mock/governance";
 import type {
   Account,
+  ApprovalDelegation,
+  ApprovalHistoryEntry,
   ApprovalRule,
   AuditEvent,
+  AuditFieldChange,
   BackupRecord,
+  BankStatementLine,
+  BatchRecord,
   CashBankAccount,
   CashBankEntry,
   Company,
@@ -58,10 +79,12 @@ import type {
   CurrencySetting,
   DashboardData,
   DocumentFile,
+  DocumentVersion,
   ExpenseVoucher,
   GoodsReceipt,
   ImportJob,
   ImportTemplate,
+  LandedCostShipment,
   InventoryAlert,
   Item,
   NotificationItem,
@@ -72,10 +95,14 @@ import type {
   PaymentDocument,
   PeriodKey,
   PurchaseInvoice,
+  ReconciliationStatement,
   ReportDefinition,
+  RevaluationRun,
   Role,
   SalesInvoice,
   SecurityControl,
+  SerialRecord,
+  StandardCostRow,
   SessionUser,
   StockAdjustmentDoc,
   StockIssue,
@@ -83,8 +110,11 @@ import type {
   StockTransferDoc,
   SystemUser,
   TaxCode,
+  TraceEvent,
+  TaxRule,
   TrialBalanceRow,
   ValuationRow,
+  VatAdjustment,
   VatBox,
   VatReturnPeriod,
   Warehouse,
@@ -369,4 +399,97 @@ export async function getBackups(): Promise<{
 }> {
   if (USING_MOCK_DATA) return { backups: MOCK_BACKUPS, controls: MOCK_SECURITY_CONTROLS };
   return request<{ backups: BackupRecord[]; controls: SecurityControl[] }>("/api/common/backups/");
+}
+
+/** Phase 2: GET /api/accounting/bank-reconciliation/?account= */
+export async function getBankStatement(accountId: string): Promise<ReconciliationStatement> {
+  if (USING_MOCK_DATA) return MOCK_STATEMENT;
+  return request<ReconciliationStatement>(
+    `/api/accounting/bank-reconciliation/?account=${accountId}`,
+  );
+}
+
+export type { BankStatementLine };
+
+/* ------------------------------------------------------------------------- *
+ * Phase 2 - expanded tax configuration and costing
+ *
+ *   GET /api/accounting/tax/rules/        GET /api/accounting/tax/adjustments/
+ *   GET /api/inventory/standard-costs/    GET /api/inventory/revaluations/
+ *   GET /api/inventory/landed-costs/
+ * ------------------------------------------------------------------------- */
+
+export async function getTaxRules(): Promise<TaxRule[]> {
+  if (USING_MOCK_DATA) return MOCK_TAX_RULES;
+  return request<TaxRule[]>("/api/accounting/tax/rules/");
+}
+
+export async function getVatAdjustments(): Promise<VatAdjustment[]> {
+  if (USING_MOCK_DATA) return MOCK_VAT_ADJUSTMENTS;
+  return request<VatAdjustment[]>("/api/accounting/tax/adjustments/");
+}
+
+export async function getStandardCosts(): Promise<StandardCostRow[]> {
+  if (USING_MOCK_DATA) return MOCK_STANDARD_COSTS;
+  return request<StandardCostRow[]>("/api/inventory/standard-costs/");
+}
+
+export async function getRevaluations(): Promise<RevaluationRun[]> {
+  if (USING_MOCK_DATA) return MOCK_REVALUATIONS;
+  return request<RevaluationRun[]>("/api/inventory/revaluations/");
+}
+
+export async function getLandedCosts(): Promise<LandedCostShipment[]> {
+  if (USING_MOCK_DATA) return MOCK_LANDED_COSTS;
+  return request<LandedCostShipment[]>("/api/inventory/landed-costs/");
+}
+
+/* Phase 2: batch, serial and expiry traceability.
+ *   GET /api/inventory/batches/   GET /api/inventory/serials/
+ *   GET /api/inventory/trace/?batch=
+ */
+
+export async function getBatches(): Promise<BatchRecord[]> {
+  if (USING_MOCK_DATA) return MOCK_BATCHES;
+  return request<BatchRecord[]>("/api/inventory/batches/");
+}
+
+export async function getSerials(): Promise<SerialRecord[]> {
+  if (USING_MOCK_DATA) return MOCK_SERIALS;
+  return request<SerialRecord[]>("/api/inventory/serials/");
+}
+
+export async function getTrace(batchId: string): Promise<TraceEvent[]> {
+  if (USING_MOCK_DATA) return MOCK_TRACE[batchId] ?? [];
+  return request<TraceEvent[]>(`/api/inventory/trace/?batch=${batchId}`);
+}
+
+/* Phase 2: approval delegation and history, document versions, audit detail.
+ *   GET /api/common/approval-delegations/  GET /api/common/approval-history/
+ *   GET /api/common/documents/versions/    GET /api/common/audit-events/changes/
+ */
+
+export async function getApprovalDelegations(): Promise<ApprovalDelegation[]> {
+  if (USING_MOCK_DATA) return MOCK_DELEGATIONS;
+  return request<ApprovalDelegation[]>("/api/common/approval-delegations/");
+}
+
+export async function getApprovalHistory(): Promise<ApprovalHistoryEntry[]> {
+  if (USING_MOCK_DATA) return MOCK_APPROVAL_HISTORY;
+  return request<ApprovalHistoryEntry[]>("/api/common/approval-history/");
+}
+
+export async function getDocumentMetadata(): Promise<{
+  tags: Record<string, string[]>;
+  versions: Record<string, DocumentVersion[]>;
+}> {
+  if (USING_MOCK_DATA) return { tags: MOCK_DOCUMENT_TAGS, versions: MOCK_DOCUMENT_VERSIONS };
+  return request<{ tags: Record<string, string[]>; versions: Record<string, DocumentVersion[]> }>(
+    "/api/common/documents/versions/",
+  );
+}
+
+export async function getAuditChanges(): Promise<Record<string, AuditFieldChange[]>> {
+  if (USING_MOCK_DATA) return MOCK_AUDIT_CHANGES;
+  return request<Record<string, AuditFieldChange[]>>("/api/common/audit-events/changes/");
 }

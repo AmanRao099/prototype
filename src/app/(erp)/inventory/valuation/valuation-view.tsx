@@ -6,9 +6,30 @@ import { Panel } from "@/components/ui/panel";
 import { Tabs } from "@/components/ui/tabs";
 import { ResultCount, Toolbar } from "@/components/ui/toolbar";
 import { formatDate, formatMoneyWhole, formatQty, toNumber } from "@/lib/format";
-import type { ValuationRow } from "@/lib/types";
+import {
+  LandedCostView,
+  RevaluationView,
+  StandardCostView,
+} from "./costing-views";
+import type {
+  LandedCostShipment,
+  RevaluationRun,
+  StandardCostRow,
+  ValuationRow,
+} from "@/lib/types";
 
-export function ValuationView({ rows }: { rows: ValuationRow[] }) {
+export function ValuationView({
+  rows,
+  standardCosts,
+  revaluations,
+  landedCosts,
+}: {
+  rows: ValuationRow[];
+  standardCosts: StandardCostRow[];
+  revaluations: RevaluationRun[];
+  landedCosts: LandedCostShipment[];
+}) {
+  const [view, setView] = useState("valuation");
   const [method, setMethod] = useState("wavg");
   const [search, setSearch] = useState("");
   const [warehouse, setWarehouse] = useState("all");
@@ -91,6 +112,23 @@ export function ValuationView({ rows }: { rows: ValuationRow[] }) {
 
   return (
     <div className="flex flex-col gap-3">
+      <Tabs
+        tabs={[
+          { id: "valuation", label: "Valuation", count: rows.length },
+          { id: "standard", label: "Standard cost", count: standardCosts.length },
+          { id: "revaluation", label: "Revaluations", count: revaluations.length },
+          { id: "landed", label: "Landed cost", count: landedCosts.length },
+        ]}
+        active={view}
+        onChange={setView}
+      />
+
+      {view === "standard" ? <StandardCostView rows={standardCosts} /> : null}
+      {view === "revaluation" ? <RevaluationView runs={revaluations} /> : null}
+      {view === "landed" ? <LandedCostView shipments={landedCosts} /> : null}
+
+      {view === "valuation" ? (
+      <>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Tabs
           tabs={[
@@ -140,6 +178,8 @@ export function ValuationView({ rows }: { rows: ValuationRow[] }) {
           }
         />
       </Panel>
+      </>
+      ) : null}
     </div>
   );
 }

@@ -689,3 +689,214 @@ export interface SecurityControl {
   state: "enforced" | "partial" | "not_configured";
   owner: string;
 }
+
+/* ------------------------------------------------------------------------- *
+ * Phase 2 - bank reconciliation
+ * ------------------------------------------------------------------------- */
+
+export interface BankStatementLine {
+  id: string;
+  date: string;
+  description: string;
+  reference: string;
+  /** Positive credits the account, negative debits it. */
+  amount: Money;
+  runningBalance: Money;
+  /** Book entry the importer thinks this line belongs to. */
+  suggestedEntryId?: string;
+  /** Why the suggestion was made, shown to the person confirming it. */
+  suggestionBasis?: "reference" | "amount_and_date" | "amount";
+}
+
+export interface ReconciliationStatement {
+  id: string;
+  accountId: string;
+  accountName: string;
+  periodLabel: string;
+  openingBalance: Money;
+  closingBalance: Money;
+  importedOn: string;
+  lines: BankStatementLine[];
+}
+
+/* ------------------------------------------------------------------------- *
+ * Phase 2 - expanded tax configuration
+ * ------------------------------------------------------------------------- */
+
+export interface TaxRule {
+  id: string;
+  name: string;
+  appliesTo: "sales" | "purchase" | "both";
+  partyLocation: string;
+  itemClass: string;
+  placeOfSupply: string;
+  taxCode: string;
+  /** Lower numbers are evaluated first. */
+  priority: number;
+  isActive: boolean;
+}
+
+export interface VatAdjustment {
+  id: string;
+  date: string;
+  reference: string;
+  periodLabel: string;
+  kind: "bad_debt_relief" | "credit_note" | "correction" | "annual_true_up";
+  direction: "increase" | "decrease";
+  amount: Money;
+  reason: string;
+  status: "draft" | "pending_approval" | "posted";
+  raisedBy: string;
+  approvedBy?: string;
+}
+
+/* ------------------------------------------------------------------------- *
+ * Phase 2 - costing enhancements
+ * ------------------------------------------------------------------------- */
+
+export interface StandardCostRow {
+  id: string;
+  sku: string;
+  item: string;
+  unit: string;
+  standardCost: Money;
+  actualCost: Money;
+  quantityOnHand: number;
+  /** Positive means the actual cost is above standard. */
+  variance: Money;
+  variancePct: number;
+  lastReviewedOn: string;
+}
+
+export interface RevaluationRun {
+  id: string;
+  reference: string;
+  runOn: string;
+  basis: "standard_to_actual" | "market_price" | "exchange_rate";
+  itemsAffected: number;
+  valueBefore: Money;
+  valueAfter: Money;
+  status: "draft" | "pending_approval" | "posted";
+  runBy: string;
+}
+
+export interface LandedCostAllocation {
+  sku: string;
+  item: string;
+  basisValue: number;
+  allocated: Money;
+}
+
+export interface LandedCostShipment {
+  id: string;
+  reference: string;
+  supplier: string;
+  arrivedOn: string;
+  goodsValue: Money;
+  freight: Money;
+  duty: Money;
+  insurance: Money;
+  handling: Money;
+  basis: "value" | "weight" | "quantity";
+  status: "draft" | "allocated" | "posted";
+  allocations: LandedCostAllocation[];
+}
+
+/* ------------------------------------------------------------------------- *
+ * Phase 2 - batch, serial and expiry traceability
+ * ------------------------------------------------------------------------- */
+
+export interface BatchRecord {
+  id: string;
+  batchNumber: string;
+  sku: string;
+  item: string;
+  warehouse: string;
+  manufacturedOn?: string;
+  expiresOn?: string;
+  receivedOn: string;
+  receivedQty: number;
+  remainingQty: number;
+  unit: string;
+  unitCost: Money;
+  supplier: string;
+  grnReference: string;
+  status: "active" | "quarantined" | "expiring" | "expired" | "consumed";
+}
+
+export interface SerialRecord {
+  id: string;
+  serialNumber: string;
+  sku: string;
+  item: string;
+  warehouse: string;
+  receivedOn: string;
+  grnReference: string;
+  status: "in_stock" | "reserved" | "delivered" | "returned" | "scrapped";
+  customer?: string;
+  deliveredOn?: string;
+  warrantyUntil?: string;
+}
+
+export interface TraceEvent {
+  id: string;
+  at: string;
+  reference: string;
+  movement: string;
+  warehouse: string;
+  quantity: number;
+  party?: string;
+  note?: string;
+}
+
+/* ------------------------------------------------------------------------- *
+ * Phase 2 - richer approvals, document search and audit detail
+ * ------------------------------------------------------------------------- */
+
+export interface ApprovalDelegation {
+  id: string;
+  fromUser: string;
+  toUser: string;
+  documentTypes: string[];
+  startsOn: string;
+  endsOn: string;
+  reason: string;
+  status: "active" | "scheduled" | "expired";
+}
+
+export interface ApprovalStep {
+  level: number;
+  approver: string;
+  decision: "approved" | "rejected" | "pending" | "skipped";
+  at?: string;
+  comment?: string;
+  /** Set when the step was actioned by a delegate rather than the named approver. */
+  actedFor?: string;
+}
+
+export interface ApprovalHistoryEntry {
+  id: string;
+  documentType: string;
+  reference: string;
+  party: string;
+  amount?: Money;
+  raisedBy: string;
+  raisedAt: string;
+  completedAt?: string;
+  outcome: "approved" | "rejected" | "in_progress";
+  steps: ApprovalStep[];
+}
+
+export interface DocumentVersion {
+  version: number;
+  uploadedBy: string;
+  uploadedAt: string;
+  sizeKb: number;
+  note: string;
+}
+
+export interface AuditFieldChange {
+  field: string;
+  before: string;
+  after: string;
+}
