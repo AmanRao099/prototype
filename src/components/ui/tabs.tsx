@@ -27,7 +27,7 @@ export function Tabs({
     <div
       role="tablist"
       className={cn(
-        "inline-flex items-center gap-0.5 rounded-[10px] border border-hairline bg-control-track p-0.5",
+        "inline-flex w-fit max-w-full items-center gap-1 self-start overflow-x-auto rounded-full bg-control-track p-[3px]",
         className,
       )}
     >
@@ -41,9 +41,9 @@ export function Tabs({
             aria-selected={selected}
             onClick={() => onChange(tab.id)}
             className={cn(
-              "rounded-lg px-2.5 py-1 text-[11.5px] font-medium transition-colors",
+              "rounded-full px-3.5 py-1.5 text-[12.5px] font-medium",
               selected
-                ? "bg-control-active text-ink shadow-panel"
+                ? "bg-control-active text-ink"
                 : "text-ink-muted hover:text-ink-secondary",
             )}
           >

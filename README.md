@@ -185,16 +185,39 @@ The proposal's Phase 2 list is built, on the same mock-data contract as Phase 1:
 Still open from the roadmap: expense-management depth (recurring schedules, department budgets) and
 Phase 3 multi-company consolidation.
 
+## Visual language
+
+The platform follows an Apple-style grammar: minimal chrome, soft corners, one accent.
+
+- **One accent.** Action Blue (`--accent`, #0066cc; #2997ff on dark) carries every
+  interactive element - links, the `+ New` button, the selected nav row, the focus ring.
+  There is no second brand colour. Chart series keep their own validated palette.
+- **Surfaces, not shadows.** White panels on a parchment plane (#f5f5f7; pure black with
+  #1c1c1e panels in dark mode). `--shadow-panel` is `none`: only floating layers - menus,
+  the command palette - lift, and the sidebar and top bar are frosted
+  (`.frosted`, `saturate(180%) blur(20px)`).
+- **One corner grammar.** The radius ladder lives in `@theme` and every `rounded-*`
+  utility resolves through it: 8px compact utility, 11px controls and menu rows, 13px
+  nav rows, 18px panels and cards, 22px the command palette, full pill for buttons,
+  search fields, tabs and badges. Nothing in between.
+- **SF Pro where it exists.** `-apple-system` leads the font stack so Apple platforms get
+  the real face and everywhere else falls back to Inter; display sizes carry negative
+  tracking (-0.019 to -0.024em) and body copy keeps editorial leading.
+- **The press gesture.** Every button and tab settles to `scale(0.97)` while held, and
+  drops that under `prefers-reduced-motion`.
+- **Labels in sentence case.** Table headers and eyebrows are quiet 11.5px ink-muted text,
+  not shouted micro-caps.
+
 ## Layout and density rules
 
 Every screen is built from the same four parts, in the same order, with one rhythm
-(`page-stack`, 20px between blocks):
+(`page-stack`, 24px between blocks):
 
 1. **Header** — title, one short line of context, a `Scope` disclosure and actions.
    The workbook's full feature list and any delivery caveat live inside `Scope`, read from
    the module registry, so no page carries a 140-character subtitle or a stack of badges.
-2. **Figures** — `SummaryStrip`: borderless, divided by hairlines, sitting on the page
-   plane so the panels below stay the heaviest thing on screen.
+2. **Figures** — `SummaryStrip`: one rounded card, divided by hairlines, carrying the
+   four numbers that summarise the register below.
 3. **Panels** — bordered surfaces holding a toolbar plus a table, or a chart.
 4. **Tables** — sticky header, hairline rules, tabular figures, hover tint, no zebra.
 

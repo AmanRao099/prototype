@@ -1,40 +1,41 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   ERP design tokens
+   ERP design tokens - Apple-flavoured
 
-   Surfaces run as a ladder (plane -> surface -> raised -> inset) so panels,
-   toolbars and hover states separate by tone rather than by heavy borders.
-   Chart colours follow the validated reference palette; status steps are fixed
-   and never reused as series colours.
+   One accent (Action Blue) carries every interactive element. Depth comes from
+   surface tone and generous radii, not from shadow: a white panel sits on a
+   parchment plane, chrome stays flat, and only floating layers (menus, the
+   command palette) get a soft drop. Chart colours stay on the validated
+   reference palette; status steps are fixed and never reused as series colours.
 --------------------------------------------------------------------------- */
 :root {
   color-scheme: light;
 
   /* planes & ink */
-  --plane: #f6f6f4;
+  --plane: #f5f5f7;
   --surface: #ffffff;
   --surface-raised: #ffffff;
-  --surface-2: #f1f1ee;
-  --surface-3: #e9e9e4;
-  --ink: #16161a;
-  --ink-secondary: #51514e;
-  --ink-muted: #87867f;
-  --hairline: rgba(16, 16, 20, 0.08);
-  --hairline-strong: rgba(16, 16, 20, 0.16);
-  --grid: #e4e3dd;
-  --axis: #c8c7bf;
-  --accent: #2a78d6;
-  --accent-hover: #2169bd;
-  --accent-wash: rgba(42, 120, 214, 0.09);
-  --accent-ring: rgba(42, 120, 214, 0.35);
+  --surface-2: #f5f5f7;
+  --surface-3: #ebebf0;
+  --ink: #1d1d1f;
+  --ink-secondary: #424245;
+  --ink-muted: #6e6e73;
+  --hairline: rgba(0, 0, 0, 0.08);
+  --hairline-strong: rgba(0, 0, 0, 0.14);
+  --grid: #e8e8ed;
+  --axis: #c7c7cc;
+  --accent: #0066cc;
+  --accent-hover: #0071e3;
+  --accent-wash: rgba(0, 102, 204, 0.08);
+  --accent-ring: rgba(0, 113, 227, 0.32);
   --on-accent: #ffffff;
-  --control-track: #ebebe7;
+  --control-track: #ebebf0;
   --control-active: #ffffff;
 
-  /* elevation - light mode leans on soft shadow, dark mode on tone */
-  --shadow-panel: 0 1px 2px rgba(16, 16, 20, 0.04), 0 1px 1px rgba(16, 16, 20, 0.03);
-  --shadow-raised: 0 6px 20px rgba(16, 16, 20, 0.1);
+  /* elevation - chrome is flat; only floating layers lift */
+  --shadow-panel: none;
+  --shadow-raised: 0 12px 34px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
 
   /* categorical series (fixed order, never cycled) */
   --series-1: #2a78d6;
@@ -65,27 +66,27 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --plane: #0c0c0d;
-    --surface: #141416;
-    --surface-raised: #18181b;
-    --surface-2: #1d1d20;
-    --surface-3: #26262a;
-    --ink: #f2f2f0;
-    --ink-secondary: #b9b9b3;
-    --ink-muted: #85857f;
-    --hairline: rgba(255, 255, 255, 0.08);
-    --hairline-strong: rgba(255, 255, 255, 0.16);
-    --grid: #26262a;
-    --axis: #3a3a3f;
-    --accent: #4b8fe8;
-    --accent-hover: #6ba4ee;
-    --accent-wash: rgba(75, 143, 232, 0.14);
-    --accent-ring: rgba(75, 143, 232, 0.45);
-    --on-accent: #0b1220;
-    --control-track: #141416;
-    --control-active: #2b2b30;
+    --plane: #000000;
+    --surface: #1c1c1e;
+    --surface-raised: #2c2c2e;
+    --surface-2: #2c2c2e;
+    --surface-3: #3a3a3c;
+    --ink: #f5f5f7;
+    --ink-secondary: #c7c7cc;
+    --ink-muted: #8e8e93;
+    --hairline: rgba(255, 255, 255, 0.1);
+    --hairline-strong: rgba(255, 255, 255, 0.2);
+    --grid: #3a3a3c;
+    --axis: #48484a;
+    --accent: #2997ff;
+    --accent-hover: #5bb0ff;
+    --accent-wash: rgba(41, 151, 255, 0.16);
+    --accent-ring: rgba(41, 151, 255, 0.4);
+    --on-accent: #06121f;
+    --control-track: #000000;
+    --control-active: #3a3a3c;
     --shadow-panel: none;
-    --shadow-raised: 0 8px 28px rgba(0, 0, 0, 0.5);
+    --shadow-raised: 0 16px 40px rgba(0, 0, 0, 0.6);
     --series-1: #3987e5;
     --series-2: #d95926;
     --series-3: #199e70;
@@ -106,27 +107,27 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --plane: #0c0c0d;
-  --surface: #141416;
-  --surface-raised: #18181b;
-  --surface-2: #1d1d20;
-  --surface-3: #26262a;
-  --ink: #f2f2f0;
-  --ink-secondary: #b9b9b3;
-  --ink-muted: #85857f;
-  --hairline: rgba(255, 255, 255, 0.08);
-  --hairline-strong: rgba(255, 255, 255, 0.16);
-  --grid: #26262a;
-  --axis: #3a3a3f;
-  --accent: #4b8fe8;
-  --accent-hover: #6ba4ee;
-  --accent-wash: rgba(75, 143, 232, 0.14);
-  --accent-ring: rgba(75, 143, 232, 0.45);
-  --on-accent: #0b1220;
-  --control-track: #141416;
-  --control-active: #2b2b30;
+  --plane: #000000;
+  --surface: #1c1c1e;
+  --surface-raised: #2c2c2e;
+  --surface-2: #2c2c2e;
+  --surface-3: #3a3a3c;
+  --ink: #f5f5f7;
+  --ink-secondary: #c7c7cc;
+  --ink-muted: #8e8e93;
+  --hairline: rgba(255, 255, 255, 0.1);
+  --hairline-strong: rgba(255, 255, 255, 0.2);
+  --grid: #3a3a3c;
+  --axis: #48484a;
+  --accent: #2997ff;
+  --accent-hover: #5bb0ff;
+  --accent-wash: rgba(41, 151, 255, 0.16);
+  --accent-ring: rgba(41, 151, 255, 0.4);
+  --on-accent: #06121f;
+  --control-track: #000000;
+  --control-active: #3a3a3c;
   --shadow-panel: none;
-  --shadow-raised: 0 8px 28px rgba(0, 0, 0, 0.5);
+  --shadow-raised: 0 16px 40px rgba(0, 0, 0, 0.6);
   --series-1: #3987e5;
   --series-2: #d95926;
   --series-3: #199e70;
@@ -177,7 +178,23 @@
   --color-critical: var(--critical);
   --color-delta-up: var(--delta-up);
   --color-delta-down: var(--delta-down);
-  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Radius ladder: compact utility -> control -> card -> sheet.
+     Every `rounded-*` utility in the app resolves through these, so the whole
+     platform shares one corner grammar. */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 11px;
+  --radius-lg: 13px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
+  --radius-3xl: 28px;
+
+  /* -apple-system resolves to the real SF Pro on Apple platforms; Inter is the
+     closest open substitute everywhere else. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", var(--font-inter),
+    "Segoe UI", system-ui, sans-serif;
   --shadow-panel: var(--shadow-panel);
   --shadow-raised: var(--shadow-raised);
 }
@@ -192,6 +209,7 @@ body {
   color: var(--ink);
   font-family: var(--font-sans);
   font-feature-settings: "cv05" 1, "ss01" 1;
+  letter-spacing: -0.006em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -203,56 +221,59 @@ body {
 
 /* ----------------------------------------------------------------------- */
 /* Type roles - one place to tune the hierarchy across every screen         */
+/* Negative tracking at display sizes is what gives the headlines their     */
+/* tight, settled cadence; body copy keeps editorial leading.              */
 /* ----------------------------------------------------------------------- */
 .t-page-title {
-  font-size: 20px;
+  font-size: 23px;
   font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.014em;
+  line-height: 1.18;
+  letter-spacing: -0.021em;
   color: var(--ink);
 }
 
 .t-panel-title {
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 600;
   line-height: 1.3;
-  letter-spacing: -0.006em;
+  letter-spacing: -0.013em;
   color: var(--ink);
 }
 
+/* Small label above a figure or a list. Sentence case, not shouted. */
 .t-eyebrow {
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.004em;
   color: var(--ink-muted);
 }
 
 .t-figure {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 600;
   line-height: 1.05;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.024em;
   color: var(--ink);
 }
 
 .t-figure-sm {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.016em;
+  line-height: 1.15;
+  letter-spacing: -0.019em;
   color: var(--ink);
 }
 
 .t-body {
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 
 .t-caption {
-  font-size: 11.5px;
-  line-height: 1.4;
+  font-size: 12px;
+  line-height: 1.45;
+  letter-spacing: -0.004em;
   color: var(--ink-muted);
 }
 
@@ -260,7 +281,7 @@ body {
 .page-stack {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .tnum {
@@ -268,20 +289,33 @@ body {
   font-feature-settings: "tnum" 1;
 }
 
+/* Frosted chrome: sticky bars and the sidebar float over content. */
+.frosted {
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
 /* ----------------------------------------------------------------------- */
 /* Controls                                                                 */
 /* ----------------------------------------------------------------------- */
 .field {
-  height: 30px;
-  border-radius: 8px;
+  height: 34px;
+  border-radius: 11px;
   border: 1px solid var(--hairline);
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 13px;
+  letter-spacing: -0.006em;
   transition:
-    border-color 120ms ease,
-    box-shadow 120ms ease,
-    background-color 120ms ease;
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+/* Search is pill-shaped - the shape itself says "type here". */
+.field-pill {
+  border-radius: 980px;
 }
 
 .field::placeholder {
@@ -295,23 +329,39 @@ body {
 .field:focus,
 .field:focus-visible {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-ring);
+  border-color: var(--accent-hover);
+  box-shadow: 0 0 0 3.5px var(--accent-ring);
 }
 
 /* native select with its own chevron */
 .select-field {
   appearance: none;
-  padding-right: 26px;
+  padding-right: 28px;
   background-image: linear-gradient(45deg, transparent 50%, var(--ink-muted) 50%),
     linear-gradient(135deg, var(--ink-muted) 50%, transparent 50%);
   background-position:
-    right 13px center,
-    right 9px center;
+    right 14px center,
+    right 10px center;
   background-size:
     4px 4px,
     4px 4px;
   background-repeat: no-repeat;
+}
+
+/* The system-wide press micro-interaction: everything clickable settles
+   slightly under the finger, then springs back. */
+button,
+[role="tab"] {
+  transition:
+    transform 140ms cubic-bezier(0.25, 0.1, 0.25, 1),
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+button:not(:disabled):active,
+[role="tab"]:active {
+  transform: scale(0.97);
 }
 
 .scroll-thin {
@@ -332,9 +382,9 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-hover);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: 11px;
 }
 
 /* theme-dependent icon swap, so the toggle needs no client state */
@@ -372,7 +422,7 @@ body {
 
 .skeleton {
   background: var(--surface-2);
-  border-radius: 6px;
+  border-radius: 10px;
   animation: erp-pulse 1.6s ease-in-out infinite;
 }
 
@@ -380,5 +430,9 @@ body {
   * {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+  button:not(:disabled):active,
+  [role="tab"]:active {
+    transform: none;
   }
 }

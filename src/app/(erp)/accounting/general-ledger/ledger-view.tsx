@@ -195,7 +195,7 @@ export function LedgerView({
                 <div className="overflow-hidden rounded-lg border border-hairline">
                   <table className="w-full border-collapse text-[11.5px]">
                     <thead>
-                      <tr className="border-b border-hairline bg-surface-2/50 text-left text-[10px] uppercase tracking-[0.06em] text-ink-muted">
+                      <tr className="border-b border-hairline bg-surface-2/50 text-left text-[11.5px] font-medium text-ink-muted">
                         <th scope="col" className="px-2.5 py-1.5 font-medium">
                           Account
                         </th>

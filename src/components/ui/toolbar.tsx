@@ -30,18 +30,18 @@ export function Toolbar({
   children?: ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b border-hairline bg-surface-2/30 px-3 py-2.5">
-      <label className="relative min-w-[200px] flex-1">
+    <div className="flex flex-wrap items-center gap-2 border-b border-hairline px-4 py-3">
+      <label className="relative min-w-[220px] flex-1">
         <span className="sr-only">{searchPlaceholder}</span>
         <Search
-          className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-ink-muted"
+          className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-ink-muted"
           aria-hidden
         />
         <input
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder={searchPlaceholder}
-          className="field w-full pr-2 pl-8"
+          className="field field-pill w-full pr-3 pl-10"
         />
       </label>
 
@@ -51,7 +51,7 @@ export function Toolbar({
           <select
             value={filter.value}
             onChange={(event) => filter.onChange(event.target.value)}
-            className="field select-field pl-2.5"
+            className="field field-pill select-field pl-3.5"
           >
             {filter.options.map((option) => (
               <option key={option.value} value={option.value}>
@@ -69,7 +69,7 @@ export function Toolbar({
 
 export function ResultCount({ shown, total, noun }: { shown: number; total: number; noun: string }) {
   return (
-    <p className="text-[11px] tnum text-ink-muted">
+    <p className="text-[12px] tnum text-ink-muted">
       {shown === total ? `${total} ${noun}` : `${shown} of ${total} ${noun}`}
     </p>
   );

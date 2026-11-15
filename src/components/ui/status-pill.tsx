@@ -20,7 +20,7 @@ const STATUS: Record<DocumentStatus, { label: string; dot: string; emphatic?: bo
 export function StatusPill({ status }: { status: DocumentStatus }) {
   const meta = STATUS[status];
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] font-medium">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[12px] font-medium">
       <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", meta.dot)} />
       <span className={meta.emphatic ? "text-delta-down" : "text-ink-secondary"}>{meta.label}</span>
     </span>

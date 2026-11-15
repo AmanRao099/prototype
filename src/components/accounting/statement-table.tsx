@@ -25,20 +25,20 @@ export function StatementTable({
           <tr className="border-b border-hairline text-left">
             <th
               scope="col"
-              className="px-4 py-2.5 text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase"
+              className="px-4 py-2.5 text-[11.5px] font-medium text-ink-muted"
             >
               Account
             </th>
             <th
               scope="col"
-              className="px-3 py-2.5 text-right text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase"
+              className="px-3 py-2.5 text-right text-[11.5px] font-medium text-ink-muted"
             >
               {periodLabel}
             </th>
             {showYtd ? (
               <th
                 scope="col"
-                className="px-4 py-2.5 text-right text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase"
+                className="px-4 py-2.5 text-right text-[11.5px] font-medium text-ink-muted"
               >
                 {ytdLabel}
               </th>

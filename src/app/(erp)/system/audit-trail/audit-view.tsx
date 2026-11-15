@@ -178,13 +178,13 @@ export function AuditView({
           <table className="w-full border-collapse text-[12.5px]">
             <thead>
               <tr className="border-b border-hairline text-left">
-                <th scope="col" className="px-4 py-2 text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase">
+                <th scope="col" className="px-4 py-2 text-[11.5px] font-medium text-ink-muted">
                   Field
                 </th>
-                <th scope="col" className="px-3 py-2 text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase">
+                <th scope="col" className="px-3 py-2 text-[11.5px] font-medium text-ink-muted">
                   Before
                 </th>
-                <th scope="col" className="px-4 py-2 text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase">
+                <th scope="col" className="px-4 py-2 text-[11.5px] font-medium text-ink-muted">
                   After
                 </th>
               </tr>

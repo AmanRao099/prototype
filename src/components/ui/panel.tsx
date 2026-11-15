@@ -15,7 +15,7 @@ export function Panel({
   return (
     <Tag
       className={cn(
-        "flex min-w-0 flex-col overflow-hidden rounded-[10px] border border-hairline bg-surface shadow-panel",
+        "flex min-w-0 flex-col overflow-hidden rounded-[18px] border border-hairline bg-surface",
         className,
       )}
     >
@@ -38,7 +38,7 @@ export function PanelHeader({
   hrefLabel?: string;
 }) {
   return (
-    <header className="flex items-center justify-between gap-4 border-b border-hairline px-4 py-3">
+    <header className="flex items-center justify-between gap-4 border-b border-hairline px-5 py-4">
       <div className="min-w-0">
         <h2 className="t-panel-title truncate">{title}</h2>
         {subtitle ? <p className="t-caption mt-1 truncate">{subtitle}</p> : null}
@@ -48,7 +48,7 @@ export function PanelHeader({
         {href ? (
           <Link
             href={href}
-            className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+            className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-medium text-accent transition-colors hover:bg-accent-wash"
           >
             {hrefLabel}
             <ArrowUpRight className="size-3" aria-hidden />
@@ -68,14 +68,14 @@ export function PanelBody({
   className?: string;
   flush?: boolean;
 }) {
-  return <div className={cn(flush ? "" : "p-4", "min-w-0 flex-1", className)}>{children}</div>;
+  return <div className={cn(flush ? "" : "p-5", "min-w-0 flex-1", className)}>{children}</div>;
 }
 
 export function PanelFooter({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <footer
       className={cn(
-        "flex items-center justify-between gap-3 border-t border-hairline bg-surface-2/40 px-4 py-2.5 text-[11px] text-ink-muted",
+        "flex items-center justify-between gap-3 border-t border-hairline bg-surface-2/50 px-5 py-3 text-[12px] text-ink-muted",
         className,
       )}
     >

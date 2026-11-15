@@ -39,7 +39,7 @@ export function PageHeader({
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="flex flex-col gap-2.5">
+    <header className="flex flex-col gap-3">
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -56,7 +56,7 @@ export function PageHeader({
               onClick={() => setScopeOpen((open) => !open)}
               aria-expanded={scopeOpen}
               className={cn(
-                "inline-flex h-[30px] items-center gap-1.5 rounded-lg px-2 text-[11.5px] font-medium transition-colors",
+                "inline-flex h-[34px] items-center gap-1.5 rounded-full px-3 text-[12.5px] font-medium",
                 scopeOpen ? "bg-surface-2 text-ink" : "text-ink-muted hover:bg-surface-2 hover:text-ink",
               )}
             >
@@ -72,7 +72,7 @@ export function PageHeader({
                 onClick={() => setMenuOpen((open) => !open)}
                 aria-expanded={menuOpen}
                 aria-label="More actions"
-                className="grid size-[30px] place-items-center rounded-lg border border-hairline text-ink-secondary transition-colors hover:bg-surface-2 hover:text-ink"
+                className="grid size-[34px] place-items-center rounded-full border border-hairline text-ink-secondary hover:bg-surface-2 hover:text-ink"
               >
                 <MoreHorizontal className="size-4" aria-hidden />
               </button>
@@ -83,13 +83,13 @@ export function PageHeader({
                     onClick={() => setMenuOpen(false)}
                     aria-hidden
                   />
-                  <ul className="absolute right-0 z-30 mt-1 min-w-[190px] overflow-hidden rounded-lg border border-hairline-strong bg-surface py-1 shadow-raised">
+                  <ul className="absolute right-0 z-30 mt-1.5 min-w-[210px] overflow-hidden rounded-[14px] border border-hairline bg-surface p-1 shadow-raised">
                     {secondaryActions.map((action) => (
                       <li key={action.label}>
                         <button
                           type="button"
                           onClick={() => setMenuOpen(false)}
-                          className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] text-ink-secondary hover:bg-surface-2 hover:text-ink"
+                          className="flex w-full items-center gap-2 rounded-[10px] px-2.5 py-2 text-left text-[12.5px] text-ink-secondary hover:bg-surface-2 hover:text-ink"
                         >
                           {action.icon}
                           {action.label}
@@ -107,7 +107,7 @@ export function PageHeader({
       </div>
 
       {scopeOpen && item ? (
-        <div className="rounded-[10px] border border-hairline bg-surface px-4 py-3">
+        <div className="rounded-[18px] border border-hairline bg-surface px-5 py-4">
           <p className="t-eyebrow">
             {item.moduleName} · {PHASE_LABEL[item.phase]}
           </p>
@@ -117,14 +117,14 @@ export function PageHeader({
               .map((feature) => feature.trim())
               .filter(Boolean)
               .map((feature) => (
-                <li key={feature} className="flex gap-2 text-[11.5px] text-ink-secondary">
+                <li key={feature} className="flex gap-2 text-[12.5px] text-ink-secondary">
                   <span aria-hidden className="mt-1.5 size-1 shrink-0 rounded-full bg-axis" />
                   {feature}
                 </li>
               ))}
           </ul>
           {note ? (
-            <p className="mt-2.5 border-t border-hairline pt-2.5 text-[11.5px] text-ink-secondary">
+            <p className="mt-3 border-t border-hairline pt-3 text-[12.5px] text-ink-secondary">
               {note}
             </p>
           ) : null}
@@ -149,11 +149,11 @@ export function ActionButton({
     <button
       type="button"
       className={cn(
-        "inline-flex h-[30px] items-center gap-1.5 rounded-lg px-2.5 text-[11.5px] font-medium transition-colors",
+        "inline-flex h-[34px] items-center gap-1.5 rounded-full px-4 text-[12.5px] font-medium",
         variant === "primary" && "bg-accent text-on-accent hover:bg-accent-hover",
         variant === "secondary" &&
           "border border-hairline bg-surface text-ink-secondary hover:border-hairline-strong hover:text-ink",
-        variant === "ghost" && "text-ink-muted hover:bg-surface-2 hover:text-ink",
+        variant === "ghost" && "px-3 text-accent hover:bg-accent-wash",
         className,
       )}
     >

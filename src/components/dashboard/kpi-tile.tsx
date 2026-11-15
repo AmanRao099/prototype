@@ -59,7 +59,7 @@ export function KpiTile({ kpi, comparisonLabel }: { kpi: Kpi; comparisonLabel: s
   );
 
   const shell =
-    "flex min-w-0 flex-col rounded-[10px] border border-hairline bg-surface p-4 shadow-panel";
+    "flex min-w-0 flex-col rounded-[18px] border border-hairline bg-surface p-5";
 
   if (!kpi.href) return <div className={shell}>{body}</div>;
 

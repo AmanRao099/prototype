@@ -60,7 +60,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4 pt-[12vh] backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/25 px-4 pt-[13vh] backdrop-blur-md"
       onClick={onClose}
       role="presentation"
     >
@@ -69,9 +69,9 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
         aria-modal="true"
         aria-label="Go to module"
         onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-lg overflow-hidden rounded-xl border border-hairline-strong bg-surface shadow-raised"
+        className="w-full max-w-xl overflow-hidden rounded-[22px] border border-hairline bg-surface shadow-raised"
       >
-        <div className="flex items-center gap-2 border-b border-hairline px-3">
+        <div className="flex items-center gap-2.5 border-b border-hairline px-4">
           <Search className="size-4 shrink-0 text-ink-muted" aria-hidden />
           <input
             ref={inputRef}

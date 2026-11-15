@@ -30,7 +30,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface-2 px-2 py-0.5 text-[10.5px] font-medium whitespace-nowrap text-ink-secondary",
+        "inline-flex items-center gap-1.5 rounded-full bg-surface-2 px-2.5 py-1 text-[11.5px] font-medium whitespace-nowrap text-ink-secondary",
         className,
       )}
     >
@@ -87,7 +87,7 @@ export function PhaseBadge({ phase, compact = false }: { phase: DeliveryPhase; c
     return (
       <span
         title={PHASE_TEXT[phase]}
-        className="shrink-0 rounded-md px-1 py-px text-[9.5px] font-semibold tracking-wide text-ink-muted/80 ring-1 ring-hairline ring-inset"
+        className="shrink-0 rounded-full px-1.5 py-px text-[10px] font-semibold text-ink-muted/80 ring-1 ring-hairline ring-inset"
       >
         {phase === "phase2" ? "P2" : "LTD"}
       </span>
@@ -95,7 +95,7 @@ export function PhaseBadge({ phase, compact = false }: { phase: DeliveryPhase; c
   }
 
   return (
-    <span className="inline-flex items-center rounded-full bg-surface-2 px-2 py-0.5 text-[10.5px] font-medium text-ink-muted">
+    <span className="inline-flex items-center rounded-full bg-surface-2 px-2.5 py-1 text-[11.5px] font-medium text-ink-muted">
       {PHASE_TEXT[phase]}
     </span>
   );

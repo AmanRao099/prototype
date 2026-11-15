@@ -54,34 +54,37 @@ export function Sidebar({
     <>
       <div
         onClick={onCloseMobile}
-        className={cn("fixed inset-0 z-30 bg-black/40 lg:hidden", mobileOpen ? "block" : "hidden")}
+        className={cn(
+          "fixed inset-0 z-30 bg-black/25 backdrop-blur-sm lg:hidden",
+          mobileOpen ? "block" : "hidden",
+        )}
         aria-hidden
       />
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-hairline bg-surface transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
-          collapsed ? "lg:w-[60px]" : "lg:w-[246px]",
-          "w-[246px]",
+          "frosted fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-hairline transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+          collapsed ? "lg:w-[68px]" : "lg:w-[258px]",
+          "w-[258px]",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         {/* brand */}
-        <div className="flex h-14 items-center gap-2.5 px-3">
+        <div className="flex h-[60px] items-center gap-2.5 px-4">
           <Link
             href={DASHBOARD_ITEM.href}
             className="flex min-w-0 items-center gap-2.5"
             onClick={onCloseMobile}
           >
-            <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-accent text-[12px] font-bold text-on-accent">
+            <span className="grid size-8 shrink-0 place-items-center rounded-[11px] bg-accent text-[13px] font-semibold text-on-accent">
               A
             </span>
             {!collapsed ? (
               <span className="min-w-0">
-                <span className="block truncate text-[13px] leading-tight font-semibold tracking-[-0.01em] text-ink">
+                <span className="block truncate text-[14px] leading-tight font-semibold tracking-[-0.015em] text-ink">
                   {APP_CONFIG.productName}
                 </span>
-                <span className="block truncate text-[10px] text-ink-muted">
+                <span className="block truncate text-[11px] text-ink-muted">
                   Accounts · Inventory · System
                 </span>
               </span>
@@ -91,7 +94,7 @@ export function Sidebar({
           <button
             type="button"
             onClick={onCloseMobile}
-            className="ml-auto rounded-lg p-1.5 text-ink-muted hover:bg-surface-2 hover:text-ink lg:hidden"
+            className="ml-auto grid size-8 place-items-center rounded-full text-ink-muted hover:bg-surface-2 hover:text-ink lg:hidden"
             aria-label="Close navigation"
           >
             <X className="size-4" />
@@ -100,7 +103,7 @@ export function Sidebar({
           <button
             type="button"
             onClick={() => setCollapsed((value) => !value)}
-            className="ml-auto hidden rounded-lg p-1.5 text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink lg:block"
+            className="ml-auto hidden size-8 place-items-center rounded-full text-ink-muted hover:bg-surface-2 hover:text-ink lg:grid"
             aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
           >
             {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
@@ -109,23 +112,25 @@ export function Sidebar({
 
         {/* search opens the palette rather than filtering a long list in place */}
         {!collapsed ? (
-          <div className="px-3 pb-3">
+          <div className="px-4 pb-4">
             <button
               type="button"
               onClick={onOpenSearch}
-              className="field flex w-full items-center gap-2 px-2.5 text-left text-ink-muted hover:border-hairline-strong"
+              className="field field-pill flex w-full items-center gap-2 px-3.5 text-left text-ink-muted hover:border-hairline-strong"
             >
               <Search className="size-3.5 shrink-0" aria-hidden />
-              <span className="flex-1 text-[12px]">Search modules</span>
-              <kbd className="rounded border border-hairline px-1 py-px text-[9.5px]">Ctrl K</kbd>
+              <span className="flex-1 text-[13px]">Search modules</span>
+              <kbd className="rounded-md bg-surface-2 px-1.5 py-px text-[10px] text-ink-muted">
+                Ctrl K
+              </kbd>
             </button>
           </div>
         ) : (
-          <div className="px-2 pb-3">
+          <div className="px-3 pb-4">
             <button
               type="button"
               onClick={onOpenSearch}
-              className="grid h-[30px] w-full place-items-center rounded-lg border border-hairline text-ink-muted hover:text-ink"
+              className="grid h-[34px] w-full place-items-center rounded-full border border-hairline text-ink-muted hover:text-ink"
               aria-label="Search modules"
             >
               <Search className="size-4" aria-hidden />
@@ -133,7 +138,7 @@ export function Sidebar({
           </div>
         )}
 
-        <nav className="scroll-thin flex-1 overflow-y-auto px-2 pb-3" aria-label="Modules">
+        <nav className="scroll-thin flex-1 overflow-y-auto px-3 pb-4" aria-label="Modules">
           <SidebarLink
             item={DASHBOARD_ITEM}
             active={pathname === DASHBOARD_ITEM.href}
@@ -170,9 +175,9 @@ export function Sidebar({
                     onClick={() => toggleSection(section.id)}
                     aria-expanded={isOpen}
                     className={cn(
-                      "flex h-[30px] w-full items-center gap-2.5 rounded-lg px-2 text-[12.5px] font-medium transition-colors",
+                      "flex h-[34px] w-full items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] font-medium",
                       hasActive ? "text-ink" : "text-ink-secondary",
-                      "hover:bg-surface-2/60",
+                      "hover:bg-surface-2",
                     )}
                   >
                     <NavIcon
@@ -193,14 +198,13 @@ export function Sidebar({
                   </button>
 
                   {isOpen ? (
-                    <ul className="mt-px mb-1 space-y-px border-l border-hairline pl-2 ml-[15px]">
+                    <ul className="mt-0.5 mb-1.5 ml-[17px] space-y-0.5 border-l border-hairline pl-2.5">
                       {section.items.map((item) => (
                         <li key={item.href}>
                           <SidebarLink
                             item={item}
                             active={pathname === item.href}
                             collapsed={false}
-                            nested
                             onNavigate={onCloseMobile}
                           />
                         </li>
@@ -214,17 +218,17 @@ export function Sidebar({
         </nav>
 
         {/* utility rail: everything administrative lives behind these two */}
-        <div className="border-t border-hairline p-2">
+        <div className="border-t border-hairline p-3">
           <Link
             href="/modules"
             onClick={onCloseMobile}
             title={collapsed ? "All modules" : undefined}
             aria-current={pathname === "/modules" ? "page" : undefined}
             className={cn(
-              "flex h-[30px] items-center gap-2.5 rounded-lg px-2 text-[12.5px] transition-colors",
+              "flex h-[34px] items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] transition-colors",
               pathname === "/modules"
-                ? "bg-surface-2 font-medium text-ink"
-                : "text-ink-secondary hover:bg-surface-2/60 hover:text-ink",
+                ? "bg-accent-wash font-medium text-ink"
+                : "text-ink-secondary hover:bg-surface-2 hover:text-ink",
             )}
           >
             <LayoutGrid className="size-[15px] shrink-0 text-ink-muted" aria-hidden />
@@ -237,10 +241,10 @@ export function Sidebar({
             title={collapsed ? "Settings" : undefined}
             aria-current={pathname === "/settings" || settingsActive ? "page" : undefined}
             className={cn(
-              "mt-px flex h-[30px] items-center gap-2.5 rounded-lg px-2 text-[12.5px] transition-colors",
+              "mt-0.5 flex h-[34px] items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] transition-colors",
               pathname === "/settings" || settingsActive
-                ? "bg-surface-2 font-medium text-ink"
-                : "text-ink-secondary hover:bg-surface-2/60 hover:text-ink",
+                ? "bg-accent-wash font-medium text-ink"
+                : "text-ink-secondary hover:bg-surface-2 hover:text-ink",
             )}
           >
             <Settings
@@ -262,13 +266,11 @@ function SidebarLink({
   item,
   active,
   collapsed,
-  nested = false,
   onNavigate,
 }: {
   item: NavItem;
   active: boolean;
   collapsed: boolean;
-  nested?: boolean;
   onNavigate: () => void;
 }) {
   return (
@@ -278,21 +280,12 @@ function SidebarLink({
       title={collapsed ? item.label : item.moduleName}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group relative flex h-[30px] items-center gap-2.5 rounded-lg px-2 text-[12.5px] transition-colors",
+        "group relative flex h-[34px] items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] transition-colors",
         active
-          ? "bg-surface-2 font-medium text-ink"
-          : "text-ink-secondary hover:bg-surface-2/60 hover:text-ink",
+          ? "bg-accent-wash font-medium text-ink"
+          : "text-ink-secondary hover:bg-surface-2 hover:text-ink",
       )}
     >
-      {active ? (
-        <span
-          aria-hidden
-          className={cn(
-            "absolute top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-accent",
-            nested ? "-left-[9px]" : "-left-2",
-          )}
-        />
-      ) : null}
       <NavIcon
         name={item.icon}
         className={cn("size-[15px] shrink-0", active ? "text-accent" : "text-ink-muted")}

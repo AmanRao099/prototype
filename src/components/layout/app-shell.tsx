@@ -49,7 +49,7 @@ export function AppShell({
         />
         <main className="min-w-0 flex-1">
           {/* a cap keeps line lengths and tile widths sane on ultrawide displays */}
-          <div className="mx-auto w-full max-w-[1680px] px-4 py-5 sm:px-6">{children}</div>
+          <div className="mx-auto w-full max-w-[1560px] px-5 py-7 sm:px-8">{children}</div>
         </main>
       </div>
 

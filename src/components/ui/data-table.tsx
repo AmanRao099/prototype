@@ -41,8 +41,8 @@ export function DataTable<T extends { id: string }>({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="px-4 py-14 text-center">
-        <p className="text-[12.5px] text-ink-secondary">{emptyMessage}</p>
+      <div className="px-5 py-16 text-center">
+        <p className="text-[13.5px] text-ink-secondary">{emptyMessage}</p>
         <p className="t-caption mt-1">Adjust the search or filters above.</p>
       </div>
     );
@@ -50,7 +50,7 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <div className={cn("scroll-thin overflow-x-auto", maxHeight && "overflow-y-auto", maxHeight)}>
-      <table className={cn("w-full border-collapse text-[12.5px]", minWidth)}>
+      <table className={cn("w-full border-collapse text-[13px]", minWidth)}>
         <thead className="sticky top-0 z-10 bg-surface">
           <tr className="border-b border-hairline text-left">
             {columns.map((column) => (
@@ -58,7 +58,7 @@ export function DataTable<T extends { id: string }>({
                 key={column.key}
                 scope="col"
                 className={cn(
-                  "px-3 py-2.5 text-[10px] font-semibold tracking-[0.07em] text-ink-muted uppercase first:pl-4 last:pr-4",
+                  "px-3.5 py-3 text-[11.5px] font-medium text-ink-muted first:pl-5 last:pr-5",
                   column.align === "right" && "text-right",
                   column.width,
                   column.hideBelow && HIDE_CLASS[column.hideBelow],
@@ -79,7 +79,7 @@ export function DataTable<T extends { id: string }>({
                 <td
                   key={column.key}
                   className={cn(
-                    "px-3 py-2.5 align-middle whitespace-nowrap first:pl-4 last:pr-4",
+                    "px-3.5 py-3 align-middle whitespace-nowrap first:pl-5 last:pr-5",
                     column.align === "right" ? "text-right tnum text-ink" : "text-ink-secondary",
                     column.hideBelow && HIDE_CLASS[column.hideBelow],
                   )}
@@ -92,7 +92,7 @@ export function DataTable<T extends { id: string }>({
         </tbody>
         {footer ? (
           <tfoot className="sticky bottom-0 bg-surface-2/80 backdrop-blur">
-            <tr className="border-t border-hairline text-[11.5px] font-medium text-ink">{footer}</tr>
+            <tr className="border-t border-hairline text-[12.5px] font-medium text-ink">{footer}</tr>
           </tfoot>
         ) : null}
       </table>
@@ -106,7 +106,7 @@ export function CellStack({ primary, secondary }: { primary: ReactNode; secondar
     <span className="block min-w-0">
       <span className="block truncate font-medium text-ink">{primary}</span>
       {secondary ? (
-        <span className="mt-0.5 block truncate text-[10.5px] text-ink-muted">{secondary}</span>
+        <span className="mt-0.5 block truncate text-[11.5px] text-ink-muted">{secondary}</span>
       ) : null}
     </span>
   );

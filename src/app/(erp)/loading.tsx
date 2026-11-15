@@ -16,7 +16,7 @@ export default function Loading() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 overflow-hidden rounded-[10px] border border-hairline bg-surface md:grid-cols-4">
+      <div className="grid grid-cols-2 overflow-hidden rounded-[18px] border border-hairline bg-surface md:grid-cols-4">
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="border-hairline px-4 py-3.5 not-first:border-l">
             <div className="skeleton h-2.5 w-20" />
@@ -27,11 +27,11 @@ export default function Loading() {
       </div>
 
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
-        <div className="rounded-[10px] border border-hairline bg-surface p-4 xl:col-span-2">
+        <div className="rounded-[18px] border border-hairline bg-surface p-5 xl:col-span-2">
           <div className="skeleton h-3 w-40" />
           <div className="skeleton mt-4 h-[220px] w-full rounded-lg" />
         </div>
-        <div className="rounded-[10px] border border-hairline bg-surface p-4">
+        <div className="rounded-[18px] border border-hairline bg-surface p-5">
           <div className="skeleton h-3 w-32" />
           <div className="mt-4 space-y-3">
             {Array.from({ length: 6 }).map((_, index) => (
