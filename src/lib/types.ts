@@ -524,3 +524,168 @@ export interface StockLedgerRow {
   rate: Money;
   value: Money;
 }
+
+/* ------------------------------------------------------------------------- *
+ * Common System
+ * Entities mirror the planned DRF serializers for the `common` app.
+ * ------------------------------------------------------------------------- */
+
+export type UserStatus = "active" | "invited" | "suspended";
+
+export interface SystemUser {
+  id: string;
+  name: string;
+  email: string;
+  roleId: string;
+  roleName: string;
+  branches: string[];
+  status: UserStatus;
+  mfaEnabled: boolean;
+  lastLoginAt?: string;
+  createdAt: string;
+}
+
+export type PermissionAction = "view" | "create" | "edit" | "approve" | "delete";
+
+export interface RolePermission {
+  module: string;
+  actions: PermissionAction[];
+}
+
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+  userCount: number;
+  scope: "company" | "branch";
+  isSystem: boolean;
+  permissions: RolePermission[];
+}
+
+export interface ApprovalRule {
+  id: string;
+  documentType: string;
+  condition: string;
+  levels: Array<{ level: number; approver: string }>;
+  delegation?: string;
+  isActive: boolean;
+  phase: DeliveryPhase;
+}
+
+export type AuditAction =
+  | "create"
+  | "update"
+  | "delete"
+  | "post"
+  | "approve"
+  | "login"
+  | "export"
+  | "settings";
+
+export interface AuditEvent {
+  id: string;
+  at: string;
+  user: string;
+  action: AuditAction;
+  module: string;
+  entity: string;
+  reference: string;
+  summary: string;
+  ipAddress: string;
+  changedFields: number;
+}
+
+export interface DocumentFile {
+  id: string;
+  name: string;
+  fileType: "pdf" | "image" | "spreadsheet" | "document";
+  sizeKb: number;
+  module: string;
+  linkedTo: string;
+  uploadedBy: string;
+  uploadedAt: string;
+  access: "all_users" | "finance_only" | "managers" | "restricted";
+}
+
+export interface NotificationItem {
+  id: string;
+  at: string;
+  channel: "in_app" | "email";
+  category: "payment_due" | "low_stock" | "expiry" | "approval" | "system";
+  title: string;
+  body: string;
+  level: StatusLevel;
+  read: boolean;
+  audience: string;
+}
+
+export interface NumberingSeries {
+  id: string;
+  documentType: string;
+  prefix: string;
+  nextNumber: number;
+  format: string;
+  resetRule: "never" | "yearly" | "monthly";
+  branchSpecific: boolean;
+}
+
+export interface CurrencySetting {
+  code: string;
+  name: string;
+  symbol: string;
+  isBase: boolean;
+  rateToBase: number;
+  updatedOn: string;
+}
+
+export interface ImportTemplate {
+  id: string;
+  name: string;
+  module: string;
+  columns: number;
+  description: string;
+  phase: DeliveryPhase;
+}
+
+export interface ImportJob {
+  id: string;
+  template: string;
+  fileName: string;
+  rows: number;
+  imported: number;
+  failed: number;
+  status: "queued" | "running" | "completed" | "failed";
+  startedAt: string;
+  runBy: string;
+}
+
+export interface CompanyEntity {
+  id: string;
+  name: string;
+  legalName: string;
+  baseCurrency: string;
+  branchCount: number;
+  userCount: number;
+  stockValue: Money;
+  revenueYtd: Money;
+  status: "live" | "setup" | "archived";
+}
+
+export interface BackupRecord {
+  id: string;
+  at: string;
+  kind: "full" | "incremental" | "snapshot";
+  sizeMb: number;
+  destination: string;
+  status: "completed" | "failed" | "running";
+  retentionDays: number;
+  restoreTestedOn?: string;
+}
+
+export interface SecurityControl {
+  id: string;
+  name: string;
+  detail: string;
+  state: "enforced" | "partial" | "not_configured";
+  owner: string;
+}

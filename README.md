@@ -124,6 +124,23 @@ client-view split and the same shared components.
 | `/inventory/alerts` | Low stock, reorder, expiry, negative stock, overstock, non-moving, reservation conflicts |
 | `/inventory/reporting` | Stock ledger with running quantity and value, plus the inventory report catalogue |
 
+## Common System screens
+
+| Route | Screen |
+| --- | --- |
+| `/system/users-roles` | User list with role, branch scope, 2FA and sign-in state; role list with a module × action permission matrix |
+| `/system/approvals` | Live approval queue with approve/reject, plus the rule set (conditions, multi-level chains, delegation) |
+| `/system/audit-trail` | Who did what, when and from where: action, module, record, changed-field count, IP |
+| `/system/documents` | Attachment register with module, linked document, size, uploader and access level |
+| `/system/notifications` | In-app and email alerts by category, read/unread, severity |
+| `/system/configuration` | Company profile, financial years and locking, tax defaults, numbering series, currencies, master-data links |
+| `/system/import-export` | Import templates, export catalogue, import-run history with row-level pass/fail |
+| `/system/multi-company` | Group entities, branch structure, and what Phase 1 does and does not consolidate |
+| `/system/backup-security` | Backup history with retention and restore tests, plus the security-control posture |
+
+All 29 workbook modules now have a screen (28 module routes plus the dashboard). The catch-all
+scope page stays as a safety net for unknown routes.
+
 ## Conventions worth keeping
 
 - **Design tokens only.** Colours come from `globals.css` custom properties; dark mode is a

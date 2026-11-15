@@ -31,16 +31,41 @@ import {
   MOCK_VALUATION,
   MOCK_WAREHOUSES,
 } from "@/lib/mock/inventory";
+import {
+  MOCK_APPROVAL_RULES,
+  MOCK_AUDIT_EVENTS,
+  MOCK_BACKUPS,
+  MOCK_COMPANIES,
+  MOCK_CURRENCIES,
+  MOCK_DOCUMENTS,
+  MOCK_IMPORT_JOBS,
+  MOCK_IMPORT_TEMPLATES,
+  MOCK_NOTIFICATIONS,
+  MOCK_NUMBERING,
+  MOCK_ROLES,
+  MOCK_SECURITY_CONTROLS,
+  MOCK_USERS,
+} from "@/lib/mock/system";
 import type {
   Account,
+  ApprovalRule,
+  AuditEvent,
+  BackupRecord,
   CashBankAccount,
   CashBankEntry,
   Company,
+  CompanyEntity,
+  CurrencySetting,
   DashboardData,
+  DocumentFile,
   ExpenseVoucher,
   GoodsReceipt,
+  ImportJob,
+  ImportTemplate,
   InventoryAlert,
   Item,
+  NotificationItem,
+  NumberingSeries,
   JournalEntry,
   LedgerRow,
   Party,
@@ -48,12 +73,15 @@ import type {
   PeriodKey,
   PurchaseInvoice,
   ReportDefinition,
+  Role,
   SalesInvoice,
+  SecurityControl,
   SessionUser,
   StockAdjustmentDoc,
   StockIssue,
   StockLedgerRow,
   StockTransferDoc,
+  SystemUser,
   TaxCode,
   TrialBalanceRow,
   ValuationRow,
@@ -269,4 +297,76 @@ export async function getInventoryAlerts(): Promise<InventoryAlert[]> {
 export async function getInventoryReports(): Promise<typeof MOCK_INVENTORY_REPORTS> {
   if (USING_MOCK_DATA) return MOCK_INVENTORY_REPORTS;
   return request<typeof MOCK_INVENTORY_REPORTS>("/api/inventory/reports/");
+}
+
+/* ------------------------------------------------------------------------- *
+ * Common System
+ *
+ * Planned endpoints (Django REST Framework, `common` app):
+ *   GET /api/common/users/            GET /api/common/roles/
+ *   GET /api/common/approval-rules/   GET /api/common/audit-events/
+ *   GET /api/common/documents/        GET /api/common/notifications/
+ *   GET /api/common/settings/         GET /api/common/import-export/
+ *   GET /api/common/companies/        GET /api/common/backups/
+ * ------------------------------------------------------------------------- */
+
+export async function getUsers(): Promise<SystemUser[]> {
+  if (USING_MOCK_DATA) return MOCK_USERS;
+  return request<SystemUser[]>("/api/common/users/");
+}
+
+export async function getRoles(): Promise<Role[]> {
+  if (USING_MOCK_DATA) return MOCK_ROLES;
+  return request<Role[]>("/api/common/roles/");
+}
+
+export async function getApprovalRules(): Promise<ApprovalRule[]> {
+  if (USING_MOCK_DATA) return MOCK_APPROVAL_RULES;
+  return request<ApprovalRule[]>("/api/common/approval-rules/");
+}
+
+export async function getAuditEvents(): Promise<AuditEvent[]> {
+  if (USING_MOCK_DATA) return MOCK_AUDIT_EVENTS;
+  return request<AuditEvent[]>("/api/common/audit-events/");
+}
+
+export async function getDocuments(): Promise<DocumentFile[]> {
+  if (USING_MOCK_DATA) return MOCK_DOCUMENTS;
+  return request<DocumentFile[]>("/api/common/documents/");
+}
+
+export async function getNotifications(): Promise<NotificationItem[]> {
+  if (USING_MOCK_DATA) return MOCK_NOTIFICATIONS;
+  return request<NotificationItem[]>("/api/common/notifications/");
+}
+
+export async function getSystemSettings(): Promise<{
+  numbering: NumberingSeries[];
+  currencies: CurrencySetting[];
+}> {
+  if (USING_MOCK_DATA) return { numbering: MOCK_NUMBERING, currencies: MOCK_CURRENCIES };
+  return request<{ numbering: NumberingSeries[]; currencies: CurrencySetting[] }>(
+    "/api/common/settings/",
+  );
+}
+
+export async function getImportExport(): Promise<{
+  templates: ImportTemplate[];
+  jobs: ImportJob[];
+}> {
+  if (USING_MOCK_DATA) return { templates: MOCK_IMPORT_TEMPLATES, jobs: MOCK_IMPORT_JOBS };
+  return request<{ templates: ImportTemplate[]; jobs: ImportJob[] }>("/api/common/import-export/");
+}
+
+export async function getCompanies(): Promise<CompanyEntity[]> {
+  if (USING_MOCK_DATA) return MOCK_COMPANIES;
+  return request<CompanyEntity[]>("/api/common/companies/");
+}
+
+export async function getBackups(): Promise<{
+  backups: BackupRecord[];
+  controls: SecurityControl[];
+}> {
+  if (USING_MOCK_DATA) return { backups: MOCK_BACKUPS, controls: MOCK_SECURITY_CONTROLS };
+  return request<{ backups: BackupRecord[]; controls: SecurityControl[] }>("/api/common/backups/");
 }
