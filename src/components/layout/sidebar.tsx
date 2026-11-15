@@ -2,37 +2,53 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
-import { PanelLeftClose, PanelLeftOpen, Search, X } from "lucide-react";
+import { useState } from "react";
+import { ChevronRight, LayoutGrid, PanelLeftClose, PanelLeftOpen, Search, Settings, X } from "lucide-react";
 import { NavIcon } from "@/components/layout/icon";
 import { PhaseBadge } from "@/components/ui/badge";
-import { DASHBOARD_ITEM, NAV_GROUPS, type NavItem } from "@/lib/nav";
+import {
+  DASHBOARD_ITEM,
+  NAV_SECTIONS,
+  SETTINGS_SECTION,
+  sectionForPath,
+  type NavItem,
+} from "@/lib/nav";
 import { APP_CONFIG } from "@/lib/config";
 import { cn } from "@/lib/utils";
 
+/**
+ * Workflow-shaped navigation.
+ *
+ * Sections collapse, and only the section you are working in is open, so the
+ * menu shows roughly eight links instead of twenty-nine. Anything not on
+ * screen is one keystroke away through the command palette.
+ */
 export function Sidebar({
   mobileOpen,
   onCloseMobile,
+  onOpenSearch,
 }: {
   mobileOpen: boolean;
   onCloseMobile: () => void;
+  onOpenSearch: () => void;
 }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const [query, setQuery] = useState("");
+  const activeSectionId = sectionForPath(pathname)?.id ?? "sell";
 
-  const groups = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    if (!needle) return NAV_GROUPS;
-    return NAV_GROUPS.map((group) => ({
-      ...group,
-      items: group.items.filter(
-        (item) =>
-          item.label.toLowerCase().includes(needle) ||
-          item.features.toLowerCase().includes(needle),
-      ),
-    })).filter((group) => group.items.length > 0);
-  }, [query]);
+  /**
+   * Open state is derived, not stored: the section you are working in is open,
+   * and anything you open or close by hand overrides that for the session. No
+   * effect has to sync it when the route changes.
+   */
+  const [overrides, setOverrides] = useState<Record<string, boolean>>({});
+  const isSectionOpen = (id: string) => overrides[id] ?? id === activeSectionId;
+
+  function toggleSection(id: string) {
+    setOverrides((current) => ({ ...current, [id]: !isSectionOpen(id) }));
+  }
+
+  const settingsActive = SETTINGS_SECTION.items.some((item) => item.href === pathname);
 
   return (
     <>
@@ -44,9 +60,9 @@ export function Sidebar({
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-hairline bg-surface transition-[width,transform] duration-200 lg:static lg:translate-x-0",
-          collapsed ? "lg:w-[60px]" : "lg:w-[254px]",
-          "w-[254px]",
+          "fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-hairline bg-surface transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+          collapsed ? "lg:w-[60px]" : "lg:w-[246px]",
+          "w-[246px]",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -91,27 +107,33 @@ export function Sidebar({
           </button>
         </div>
 
+        {/* search opens the palette rather than filtering a long list in place */}
         {!collapsed ? (
           <div className="px-3 pb-3">
-            <label className="relative block">
-              <Search
-                className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-ink-muted"
-                aria-hidden
-              />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search modules"
-                className="field w-full pr-2 pl-8"
-              />
-            </label>
+            <button
+              type="button"
+              onClick={onOpenSearch}
+              className="field flex w-full items-center gap-2 px-2.5 text-left text-ink-muted hover:border-hairline-strong"
+            >
+              <Search className="size-3.5 shrink-0" aria-hidden />
+              <span className="flex-1 text-[12px]">Search modules</span>
+              <kbd className="rounded border border-hairline px-1 py-px text-[9.5px]">Ctrl K</kbd>
+            </button>
           </div>
-        ) : null}
+        ) : (
+          <div className="px-2 pb-3">
+            <button
+              type="button"
+              onClick={onOpenSearch}
+              className="grid h-[30px] w-full place-items-center rounded-lg border border-hairline text-ink-muted hover:text-ink"
+              aria-label="Search modules"
+            >
+              <Search className="size-4" aria-hidden />
+            </button>
+          </div>
+        )}
 
-        <nav
-          className="scroll-thin flex-1 overflow-y-auto px-2 pb-3"
-          aria-label="Modules"
-        >
+        <nav className="scroll-thin flex-1 overflow-y-auto px-2 pb-3" aria-label="Modules">
           <SidebarLink
             item={DASHBOARD_ITEM}
             active={pathname === DASHBOARD_ITEM.href}
@@ -119,42 +141,118 @@ export function Sidebar({
             onNavigate={onCloseMobile}
           />
 
-          {groups.map((group) => (
-            <div key={group.title} className="mt-5 first:mt-3">
-              {!collapsed ? (
-                <p className="t-eyebrow px-2 pb-1.5">{group.title}</p>
-              ) : (
-                <div className="mx-2 my-3 border-t border-hairline" />
-              )}
-              <ul className="space-y-px">
-                {group.items.map((item) => (
-                  <li key={item.href}>
-                    <SidebarLink
-                      item={item}
-                      active={pathname === item.href}
-                      collapsed={collapsed}
-                      onNavigate={onCloseMobile}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="mt-2 space-y-0.5">
+            {NAV_SECTIONS.map((section) => {
+              const isOpen = isSectionOpen(section.id);
+              const hasActive = section.items.some((item) => item.href === pathname);
 
-          {groups.length === 0 ? (
-            <p className="px-2 py-6 text-[12px] text-ink-muted">No module matches that search.</p>
-          ) : null}
+              if (collapsed) {
+                return (
+                  <div key={section.id} className="space-y-px py-1">
+                    <div className="mx-2 border-t border-hairline" />
+                    {section.items.map((item) => (
+                      <SidebarLink
+                        key={item.href}
+                        item={item}
+                        active={pathname === item.href}
+                        collapsed
+                        onNavigate={onCloseMobile}
+                      />
+                    ))}
+                  </div>
+                );
+              }
+
+              return (
+                <div key={section.id}>
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(section.id)}
+                    aria-expanded={isOpen}
+                    className={cn(
+                      "flex h-[30px] w-full items-center gap-2.5 rounded-lg px-2 text-[12.5px] font-medium transition-colors",
+                      hasActive ? "text-ink" : "text-ink-secondary",
+                      "hover:bg-surface-2/60",
+                    )}
+                  >
+                    <NavIcon
+                      name={section.icon}
+                      className={cn("size-[15px] shrink-0", hasActive ? "text-accent" : "text-ink-muted")}
+                    />
+                    <span className="flex-1 text-left">{section.title}</span>
+                    {!isOpen && hasActive ? (
+                      <span aria-hidden className="size-1.5 rounded-full bg-accent" />
+                    ) : null}
+                    <ChevronRight
+                      className={cn(
+                        "size-3.5 shrink-0 text-ink-muted transition-transform",
+                        isOpen && "rotate-90",
+                      )}
+                      aria-hidden
+                    />
+                  </button>
+
+                  {isOpen ? (
+                    <ul className="mt-px mb-1 space-y-px border-l border-hairline pl-2 ml-[15px]">
+                      {section.items.map((item) => (
+                        <li key={item.href}>
+                          <SidebarLink
+                            item={item}
+                            active={pathname === item.href}
+                            collapsed={false}
+                            nested
+                            onNavigate={onCloseMobile}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
         </nav>
 
-        {!collapsed ? (
-          <div className="border-t border-hairline px-3 py-2.5">
-            <p className="text-[10.5px] leading-relaxed text-ink-muted">
-              29 modules from the source workbook.{" "}
-              <span className="text-ink-secondary">LTD</span> and{" "}
-              <span className="text-ink-secondary">P2</span> mark limited and post-MVP scope.
-            </p>
-          </div>
-        ) : null}
+        {/* utility rail: everything administrative lives behind these two */}
+        <div className="border-t border-hairline p-2">
+          <Link
+            href="/modules"
+            onClick={onCloseMobile}
+            title={collapsed ? "All modules" : undefined}
+            aria-current={pathname === "/modules" ? "page" : undefined}
+            className={cn(
+              "flex h-[30px] items-center gap-2.5 rounded-lg px-2 text-[12.5px] transition-colors",
+              pathname === "/modules"
+                ? "bg-surface-2 font-medium text-ink"
+                : "text-ink-secondary hover:bg-surface-2/60 hover:text-ink",
+            )}
+          >
+            <LayoutGrid className="size-[15px] shrink-0 text-ink-muted" aria-hidden />
+            {!collapsed ? <span className="flex-1 truncate">All modules</span> : null}
+          </Link>
+
+          <Link
+            href="/settings"
+            onClick={onCloseMobile}
+            title={collapsed ? "Settings" : undefined}
+            aria-current={pathname === "/settings" || settingsActive ? "page" : undefined}
+            className={cn(
+              "mt-px flex h-[30px] items-center gap-2.5 rounded-lg px-2 text-[12.5px] transition-colors",
+              pathname === "/settings" || settingsActive
+                ? "bg-surface-2 font-medium text-ink"
+                : "text-ink-secondary hover:bg-surface-2/60 hover:text-ink",
+            )}
+          >
+            <Settings
+              className={cn(
+                "size-[15px] shrink-0",
+                settingsActive || pathname === "/settings" ? "text-accent" : "text-ink-muted",
+              )}
+              aria-hidden
+            />
+            {!collapsed ? <span className="flex-1 truncate">Settings</span> : null}
+          </Link>
+        </div>
       </aside>
     </>
   );
@@ -164,18 +262,20 @@ function SidebarLink({
   item,
   active,
   collapsed,
+  nested = false,
   onNavigate,
 }: {
   item: NavItem;
   active: boolean;
   collapsed: boolean;
+  nested?: boolean;
   onNavigate: () => void;
 }) {
   return (
     <Link
       href={item.href}
       onClick={onNavigate}
-      title={collapsed ? item.label : undefined}
+      title={collapsed ? item.label : item.moduleName}
       aria-current={active ? "page" : undefined}
       className={cn(
         "group relative flex h-[30px] items-center gap-2.5 rounded-lg px-2 text-[12.5px] transition-colors",
@@ -187,7 +287,10 @@ function SidebarLink({
       {active ? (
         <span
           aria-hidden
-          className="absolute top-1/2 -left-2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-accent"
+          className={cn(
+            "absolute top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-accent",
+            nested ? "-left-[9px]" : "-left-2",
+          )}
         />
       ) : null}
       <NavIcon

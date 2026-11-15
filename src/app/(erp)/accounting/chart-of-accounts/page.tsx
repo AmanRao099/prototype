@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Download, Plus, Upload } from "lucide-react";
+import { Plus } from "lucide-react";
 import { AccountsView } from "./accounts-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -27,20 +27,12 @@ export default async function ChartOfAccountsPage() {
   const equity = accounts.find((account) => account.code === "3000");
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Chart of Accounts"
-        subtitle="Account groups, hierarchy, opening balances and cash/bank accounts"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Upload className="size-3.5" />}>Import</ActionButton>
-            <ActionButton icon={<Download className="size-3.5" />}>Export</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New account
-            </ActionButton>
-          </>
-        }
+        subtitle="Accounts, groups and opening balances"
+        secondaryActions={[{ label: "Import" }, { label: "Export" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New account</ActionButton>}
       />
 
       <SummaryStrip

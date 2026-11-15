@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Download, Printer } from "lucide-react";
 import { ReportingView } from "./reporting-view";
 import { RankedBars } from "@/components/charts/ranked-bars";
-import { ActionButton, PageHeader } from "@/components/ui/page-header";
+import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { SummaryStrip } from "@/components/ui/summary-strip";
 import { getReportCatalogue, getTrialBalance } from "@/lib/api/client";
@@ -49,18 +48,12 @@ export default async function FinancialReportingPage() {
     .sort((a, b) => b.value - a.value);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Financial Reporting"
-        subtitle="Trial balance, profit & loss, balance sheet, ledgers, ageing, registers and VAT reports"
-        phase="limited"
-        phaseNote="Core reports in Phase 1"
-        actions={
-          <>
-            <ActionButton icon={<Printer className="size-3.5" />}>Print</ActionButton>
-            <ActionButton icon={<Download className="size-3.5" />}>Export to Excel</ActionButton>
-          </>
-        }
+        subtitle="Trial balance, statements and registers"
+        note="Core statements and registers in Phase 1. Cash flow, custom report building and advanced analytics are later phases."
+        secondaryActions={[{ label: "Print" }, { label: "Export to Excel" }]}
       />
 
       <SummaryStrip

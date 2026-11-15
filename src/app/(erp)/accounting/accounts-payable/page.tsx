@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CalendarClock, Download, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   PartyLedgerView,
   type OpenDocument,
@@ -53,20 +53,12 @@ export default async function AccountsPayablePage() {
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Accounts Payable"
-        subtitle="Supplier accounts, supplier invoices, payment vouchers, debit notes and ageing"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<CalendarClock className="size-3.5" />}>Payment run</ActionButton>
-            <ActionButton icon={<Download className="size-3.5" />}>Export ageing</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              Record payment
-            </ActionButton>
-          </>
-        }
+        subtitle="Supplier balances, ageing and what falls due"
+        secondaryActions={[{ label: "Payment run" }, { label: "Export ageing" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>Record payment</ActionButton>}
       />
 
       <SummaryStrip

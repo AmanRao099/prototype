@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Download, FileDown, FileUp, Upload } from "lucide-react";
+import { FileDown, FileUp, Upload } from "lucide-react";
 import { Badge, PhaseBadge } from "@/components/ui/badge";
 import { CellStack, DataTable, type Column } from "@/components/ui/data-table";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
@@ -66,19 +66,12 @@ export default async function ImportExportPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Import & Export"
-        subtitle="Excel and CSV import, Excel and PDF export, and bulk data upload"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Download className="size-3.5" />}>Download templates</ActionButton>
-            <ActionButton variant="primary" icon={<Upload className="size-3.5" />}>
-              New import
-            </ActionButton>
-          </>
-        }
+        subtitle="Templates, runs and exports"
+        secondaryActions={[{ label: "Download templates" }]}
+        actions={<ActionButton variant="primary" icon={<Upload className="size-3.5" />}>New import</ActionButton>}
       />
 
       <SummaryStrip

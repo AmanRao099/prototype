@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Building2, Construction, Plus } from "lucide-react";
+import { Building2, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CellStack, DataTable, type Column } from "@/components/ui/data-table";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
@@ -61,24 +61,14 @@ export default async function MultiCompanyPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Multi-company & Branch"
-        subtitle="Company-wise and branch-wise transactions, reporting and stock control"
-        phase="phase2"
-        actions={
-          <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-            Add company
-          </ActionButton>
-        }
+        subtitle="Group entities and branch structure"
+        note="Phase 1 runs one live legal entity with a basic branch structure. Consolidation, intercompany postings and cross-company reporting are Phase 3."
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>Add company</ActionButton>}
       />
 
-      <p className="flex items-start gap-2 rounded-[10px] border border-hairline bg-surface px-4 py-3 text-[12px] text-ink-secondary">
-        <Construction className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden />
-        Phase 1 runs one live legal entity with a basic branch structure. Consolidation,
-        intercompany postings and cross-company reporting are Phase 3 scope; the entities below are
-        registered but not yet trading in the system.
-      </p>
 
       <SummaryStrip
         items={[

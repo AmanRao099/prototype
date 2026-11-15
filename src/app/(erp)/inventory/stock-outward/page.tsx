@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus, Truck } from "lucide-react";
+import { Plus } from "lucide-react";
 import { OutwardView } from "./outward-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -21,19 +21,12 @@ export default async function StockOutwardPage() {
   const pending = issues.filter((issue) => issue.status === "pending_approval").length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Stock Outward"
-        subtitle="Stock issue, sales delivery, delivery notes, reservations and allocation, internal consumption and damaged stock"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Truck className="size-3.5" />}>Delivery notes</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New stock issue
-            </ActionButton>
-          </>
-        }
+        subtitle="Issues, deliveries and reservations"
+        secondaryActions={[{ label: "Delivery notes" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New stock issue</ActionButton>}
       />
 
       <SummaryStrip

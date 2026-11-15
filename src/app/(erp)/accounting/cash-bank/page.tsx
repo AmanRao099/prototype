@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowLeftRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { CashBankView } from "./cash-bank-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -36,20 +36,13 @@ export default async function CashBankPage() {
   const unreconciled = accounts.reduce((sum, account) => sum + account.unreconciledCount, 0);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Cash & Bank"
-        subtitle="Cash and bank accounts, receipts, payments, fund transfers, petty cash and daily closing"
-        phase="limited"
-        phaseNote="Bank reconciliation automation in Phase 2"
-        actions={
-          <>
-            <ActionButton icon={<ArrowLeftRight className="size-3.5" />}>Fund transfer</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New voucher
-            </ActionButton>
-          </>
-        }
+        subtitle="Accounts, day books and reconciliation state"
+        note="Bank-feed integration and automated reconciliation are Phase 2; Phase 1 matches entries by hand."
+        secondaryActions={[{ label: "Fund transfer" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New voucher</ActionButton>}
       />
 
       <SummaryStrip

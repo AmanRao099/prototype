@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Download, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { LedgerView } from "./ledger-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -25,19 +25,12 @@ export default async function GeneralLedgerPage() {
   const postedCredit = posted.reduce((sum, entry) => sum + toNumber(entry.totalCredit), 0);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="General Ledger"
-        subtitle="Journal entries, debit/credit postings, ledger statements and reconciliation"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Download className="size-3.5" />}>Export</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New journal entry
-            </ActionButton>
-          </>
-        }
+        subtitle="Journal vouchers and account statements"
+        secondaryActions={[{ label: "Export" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New journal entry</ActionButton>}
       />
 
       <SummaryStrip

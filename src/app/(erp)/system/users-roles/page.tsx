@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus, UserPlus } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { UsersRolesView } from "./users-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -17,19 +17,12 @@ export default async function UsersRolesPage() {
   const invited = users.filter((user) => user.status === "invited").length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Users & Roles"
-        subtitle="User accounts, role-based access, module and action permissions and data-level restrictions"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Plus className="size-3.5" />}>New role</ActionButton>
-            <ActionButton variant="primary" icon={<UserPlus className="size-3.5" />}>
-              Invite user
-            </ActionButton>
-          </>
-        }
+        subtitle="Accounts, roles and permissions"
+        secondaryActions={[{ label: "New role" }]}
+        actions={<ActionButton variant="primary" icon={<UserPlus className="size-3.5" />}>Invite user</ActionButton>}
       />
 
       <SummaryStrip

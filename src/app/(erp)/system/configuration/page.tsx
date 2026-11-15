@@ -30,16 +30,11 @@ export default async function ConfigurationPage() {
   const activeFy = company.financialYears.find((year) => year.isActive) ?? company.financialYears[0];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="System Configuration"
-        subtitle="Company and branch settings, financial year, currencies, tax settings, document numbering and master data"
-        phase="mvp"
-        actions={
-          <ActionButton variant="primary" icon={<Save className="size-3.5" />}>
-            Save changes
-          </ActionButton>
-        }
+        subtitle="Company, year, numbering and currencies"
+        actions={<ActionButton variant="primary" icon={<Save className="size-3.5" />}>Save changes</ActionButton>}
       />
 
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">

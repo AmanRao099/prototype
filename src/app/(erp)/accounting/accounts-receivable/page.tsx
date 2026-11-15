@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Download, Plus, Send } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   PartyLedgerView,
   type OpenDocument,
@@ -46,20 +46,12 @@ export default async function AccountsReceivablePage() {
   ).length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Accounts Receivable"
-        subtitle="Customer accounts, invoices, receipts, credit notes, ageing and credit limits"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Send className="size-3.5" />}>Send statements</ActionButton>
-            <ActionButton icon={<Download className="size-3.5" />}>Export ageing</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              Record receipt
-            </ActionButton>
-          </>
-        }
+        subtitle="Customer balances, ageing and credit limits"
+        secondaryActions={[{ label: "Send statements" }, { label: "Export ageing" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>Record receipt</ActionButton>}
       />
 
       <SummaryStrip

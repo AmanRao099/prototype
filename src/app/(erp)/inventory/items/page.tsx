@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Download, Plus, Upload } from "lucide-react";
+import { Plus } from "lucide-react";
 import { ItemsView } from "./items-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -18,20 +18,12 @@ export default async function ItemsPage() {
   const tracked = items.filter((item) => item.tracking !== "none").length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Item & Product Master"
-        subtitle="SKU codes, barcodes, categories, brands, units and conversions, prices, VAT and batch/serial tracking"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Upload className="size-3.5" />}>Import items</ActionButton>
-            <ActionButton icon={<Download className="size-3.5" />}>Export</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New item
-            </ActionButton>
-          </>
-        }
+        subtitle="SKUs, units, prices and stock position"
+        secondaryActions={[{ label: "Import items" }, { label: "Export" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New item</ActionButton>}
       />
 
       <SummaryStrip

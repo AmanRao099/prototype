@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ClipboardCheck, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { InwardView } from "./inward-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -21,19 +21,12 @@ export default async function StockInwardPage() {
   const tracked = periodReceipts.filter((receipt) => receipt.tracked !== "none").length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Stock Inward"
-        subtitle="Goods receipt notes, purchase receipts, direct entry, opening stock, quantity verification and batch/serial details"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<ClipboardCheck className="size-3.5" />}>Verify quantities</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New goods receipt
-            </ActionButton>
-          </>
-        }
+        subtitle="Goods received into stock"
+        secondaryActions={[{ label: "Verify quantities" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New goods receipt</ActionButton>}
       />
 
       <SummaryStrip

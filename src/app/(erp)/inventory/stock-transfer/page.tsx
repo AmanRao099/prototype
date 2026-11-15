@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus, Route } from "lucide-react";
+import { Plus } from "lucide-react";
 import { TransferView } from "./transfer-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -20,19 +20,12 @@ export default async function StockTransferPage() {
   const movedQty = received.reduce((sum, transfer) => sum + transfer.quantity, 0);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Stock Transfer"
-        subtitle="Warehouse transfers, transfer requests and approvals, dispatch, receipt confirmation and in-transit tracking"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Route className="size-3.5" />}>In-transit report</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New transfer request
-            </ActionButton>
-          </>
-        }
+        subtitle="Movements between warehouses"
+        secondaryActions={[{ label: "In-transit report" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New transfer request</ActionButton>}
       />
 
       <SummaryStrip

@@ -22,17 +22,12 @@ export default async function ApprovalsPage() {
   const multiLevel = rules.filter((rule) => rule.levels.length > 1).length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Approval Workflow"
-        subtitle="Invoice, payment, purchase and stock-adjustment approvals, multi-level approvals, delegation and approval history"
-        phase="limited"
-        phaseNote="Basic approval states in Phase 1"
-        actions={
-          <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-            New approval rule
-          </ActionButton>
-        }
+        subtitle="Documents waiting on a decision"
+        note="Basic approval states in Phase 1. Conditional matrices and delegation are Phase 2."
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New approval rule</ActionButton>}
       />
 
       <SummaryStrip

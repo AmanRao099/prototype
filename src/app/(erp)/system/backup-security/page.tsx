@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CircleAlert, DatabaseBackup, ShieldCheck, TriangleAlert } from "lucide-react";
+import { CircleAlert, ShieldCheck, TriangleAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CellStack, DataTable, type Column } from "@/components/ui/data-table";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
@@ -84,19 +84,12 @@ export default async function BackupSecurityPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Backup & Security"
-        subtitle="Automated backups, access security, password policies and recovery controls"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<DatabaseBackup className="size-3.5" />}>Run backup now</ActionButton>
-            <ActionButton variant="primary" icon={<ShieldCheck className="size-3.5" />}>
-              Security review
-            </ActionButton>
-          </>
-        }
+        subtitle="Backups, restores and security posture"
+        secondaryActions={[{ label: "Run backup now" }]}
+        actions={<ActionButton variant="primary" icon={<ShieldCheck className="size-3.5" />}>Security review</ActionButton>}
       />
 
       <SummaryStrip

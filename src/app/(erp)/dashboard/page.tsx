@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Download, RefreshCw } from "lucide-react";
 import { DataTableView } from "@/components/charts/data-table-view";
 import { RankedBars } from "@/components/charts/ranked-bars";
 import { ActivityTable } from "@/components/dashboard/activity-table";
@@ -12,8 +11,7 @@ import { PeriodFilter } from "@/components/dashboard/period-filter";
 import { ReceivablesPanel } from "@/components/dashboard/receivables-panel";
 import { SalesPurchasePanel } from "@/components/dashboard/sales-purchase-panel";
 import { StockMovementPanel } from "@/components/dashboard/stock-movement-panel";
-import { Badge } from "@/components/ui/badge";
-import { ActionButton } from "@/components/ui/page-header";
+import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { USING_MOCK_DATA, getDashboard } from "@/lib/api/client";
 import { formatDateTime, formatMoneyCompact, formatMoneyWhole, formatQty } from "@/lib/format";
@@ -40,29 +38,16 @@ export default async function DashboardPage({
   const criticalAlerts = data.alerts.filter((alert) => alert.level === "critical").length;
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* page header and the single filter row above the charts */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <h1 className="t-page-title">Dashboard</h1>
-            {USING_MOCK_DATA ? (
-              <Badge tone="accent" dot>
-                Sample data
-              </Badge>
-            ) : null}
-          </div>
-          <p className="t-caption mt-1">
-            {PERIOD_LABEL[period]} - figures as at {formatDateTime(data.generatedAt)}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <PeriodFilter active={period} />
-          <ActionButton icon={<RefreshCw className="size-3.5" />}>Refresh</ActionButton>
-          <ActionButton icon={<Download className="size-3.5" />}>Export</ActionButton>
-        </div>
-      </div>
+    <div className="page-stack">
+      {/* page header carries the one filter row that governs every panel below */}
+      <PageHeader
+        title="Dashboard"
+        subtitle={`${PERIOD_LABEL[period]} · figures as at ${formatDateTime(data.generatedAt)}${
+          USING_MOCK_DATA ? " · sample data" : ""
+        }`}
+        secondaryActions={[{ label: "Refresh" }, { label: "Export" }]}
+        actions={<PeriodFilter active={period} />}
+      />
 
       {/* financial overview: stat tiles, the number is the chart */}
       <section aria-label="Financial overview" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">

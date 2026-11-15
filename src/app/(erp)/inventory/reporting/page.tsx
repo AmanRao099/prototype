@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Download, Printer } from "lucide-react";
 import { InventoryReportingView } from "./reporting-view";
 import { RankedBars } from "@/components/charts/ranked-bars";
-import { ActionButton, PageHeader } from "@/components/ui/page-header";
+import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { SummaryStrip } from "@/components/ui/summary-strip";
 import {
@@ -42,18 +41,12 @@ export default async function InventoryReportingPage() {
     .sort((a, b) => b.value - a.value);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Inventory Reporting"
-        subtitle="Current stock, stock summary and ledger, movement, valuation, ageing, batch/serial, expiry, slow stock, reorder and reconciliation"
-        phase="limited"
-        phaseNote="Core reports in Phase 1"
-        actions={
-          <>
-            <ActionButton icon={<Printer className="size-3.5" />}>Print</ActionButton>
-            <ActionButton icon={<Download className="size-3.5" />}>Export to Excel</ActionButton>
-          </>
-        }
+        subtitle="Stock ledger and report catalogue"
+        note="Core stock reports in Phase 1. Ageing analytics and full batch/serial traceability reports follow in Phase 2."
+        secondaryActions={[{ label: "Print" }, { label: "Export to Excel" }]}
       />
 
       <SummaryStrip

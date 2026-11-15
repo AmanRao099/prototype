@@ -17,17 +17,12 @@ export default async function DocumentsPage() {
   const modules = new Set(documents.map((document) => document.module)).size;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Documents"
-        subtitle="Attachments for invoices, receipts and supporting documents, with search and access control"
-        phase="limited"
-        phaseNote="Document lifecycle in Phase 2"
-        actions={
-          <ActionButton variant="primary" icon={<Upload className="size-3.5" />}>
-            Upload document
-          </ActionButton>
-        }
+        subtitle="Attachments and access control"
+        note="Attachment, search and access control in Phase 1. Versioning and document lifecycle are Phase 2."
+        actions={<ActionButton variant="primary" icon={<Upload className="size-3.5" />}>Upload document</ActionButton>}
       />
 
       <SummaryStrip

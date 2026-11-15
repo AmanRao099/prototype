@@ -25,11 +25,11 @@ export default async function ModulePlaceholderPage({
 
   if (!match) notFound();
 
-  const { item, group } = match;
+  const { item, section } = match;
   const features = item.features.split(";").map((feature) => feature.trim()).filter(Boolean);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-hairline bg-surface text-ink-secondary">
@@ -37,12 +37,12 @@ export default async function ModulePlaceholderPage({
           </span>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="t-page-title">{item.label}</h1>
+              <h1 className="t-page-title">{item.moduleName}</h1>
               <PhaseBadge phase={item.phase} />
               {item.badge ? <Badge tone="neutral">{item.badge}</Badge> : null}
             </div>
             <p className="t-caption mt-1">
-              {group?.title ?? "Common System"} - {PHASE_LABEL[item.phase]}
+              {section?.title ?? "Settings"} · {item.workbookCategory} · {PHASE_LABEL[item.phase]}
             </p>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default async function ModulePlaceholderPage({
               </div>
               <div className="flex items-center justify-between gap-3">
                 <dt className="text-ink-muted">Django app</dt>
-                <dd className="font-medium text-ink">{group?.app ?? "common"}</dd>
+                <dd className="font-medium text-ink">{item.app}</dd>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <dt className="text-ink-muted">Route</dt>

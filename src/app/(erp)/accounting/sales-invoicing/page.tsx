@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Download, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { SalesView } from "./sales-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -28,19 +28,12 @@ export default async function SalesInvoicingPage() {
     .reduce((sum, invoice) => sum + toNumber(invoice.total), 0);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Sales & Invoicing"
-        subtitle="Cash and credit invoices, proforma, VAT, sales returns, credit notes and PDF printing"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Download className="size-3.5" />}>Sales register</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New invoice
-            </ActionButton>
-          </>
-        }
+        subtitle="Invoices, credit notes and collection status"
+        secondaryActions={[{ label: "Sales register" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New invoice</ActionButton>}
       />
 
       <SummaryStrip

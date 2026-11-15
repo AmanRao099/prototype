@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Download } from "lucide-react";
 import { ValuationView } from "./valuation-view";
-import { ActionButton, PageHeader } from "@/components/ui/page-header";
+import { PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
 import { getValuation, getWarehouses } from "@/lib/api/client";
 import { formatMoneyCompact, toNumber } from "@/lib/format";
@@ -25,13 +24,12 @@ export default async function ValuationPage() {
   const landed = rows.reduce((sum, row) => sum + toNumber(row.landedCost), 0);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Valuation & Costing"
-        subtitle="FIFO, weighted average, item and warehouse valuation, landed cost allocation and movement costing"
-        phase="limited"
-        phaseNote="FIFO and weighted average in Phase 1"
-        actions={<ActionButton icon={<Download className="size-3.5" />}>Export valuation</ActionButton>}
+        subtitle="Closing value by costing method"
+        note="FIFO and weighted average in Phase 1. Standard costing, revaluation runs and full landed-cost apportionment across shipments are Phase 2."
+        secondaryActions={[{ label: "Export valuation" }]}
       />
 
       <SummaryStrip
@@ -60,11 +58,6 @@ export default async function ValuationPage() {
         ]}
       />
 
-      <p className="rounded-[10px] border border-hairline bg-surface px-4 py-3 text-[12px] text-ink-secondary">
-        Standard costing, revaluation runs and full landed-cost apportionment across shipments are
-        Phase 2 items. Phase 1 values movements at the configured method and allocates landed cost
-        on the receipt that carries it.
-      </p>
 
       <ValuationView rows={rows} />
     </div>

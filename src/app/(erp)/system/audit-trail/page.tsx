@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Download } from "lucide-react";
 import { AuditView } from "./audit-view";
-import { ActionButton, PageHeader } from "@/components/ui/page-header";
+import { PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
 import { getAuditEvents } from "@/lib/api/client";
 
@@ -18,12 +17,11 @@ export default async function AuditTrailPage() {
   const users = new Set(events.map((event) => event.user)).size;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Audit Trail"
-        subtitle="User activity logs, transaction history and record change tracking"
-        phase="mvp"
-        actions={<ActionButton icon={<Download className="size-3.5" />}>Export log</ActionButton>}
+        subtitle="Who changed what, and when"
+        secondaryActions={[{ label: "Export log" }]}
       />
 
       <SummaryStrip

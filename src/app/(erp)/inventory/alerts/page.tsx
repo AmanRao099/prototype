@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BellRing, Settings2 } from "lucide-react";
+import { BellRing } from "lucide-react";
 import { AlertsView } from "./alerts-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -20,19 +20,12 @@ export default async function InventoryAlertsPage() {
   const reservedShort = items.filter((item) => item.available < 0).length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Inventory Alerts"
-        subtitle="Low stock, reorder level, overstock, expiry, non-moving stock, negative stock and reservation alerts"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Settings2 className="size-3.5" />}>Alert rules</ActionButton>
-            <ActionButton variant="primary" icon={<BellRing className="size-3.5" />}>
-              Notify owners
-            </ActionButton>
-          </>
-        }
+        subtitle="Items that need attention"
+        secondaryActions={[{ label: "Alert rules" }]}
+        actions={<ActionButton variant="primary" icon={<BellRing className="size-3.5" />}>Notify owners</ActionButton>}
       />
 
       <SummaryStrip

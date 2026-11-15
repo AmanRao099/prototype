@@ -84,6 +84,33 @@ receivables/payables; stock summary and alerts*:
 - inventory alerts, pending approvals, recent postings, customer credit exposure
 - period filter (MTD / last 30 days / QTD / FY to date) held in the URL
 
+## How the navigation is arranged
+
+The workbook lists its 29 modules in three categories. That is the right inventory of
+scope and the wrong menu — it separates "Stock Inward" from the purchase invoice it
+follows and mixes daily screens with administration. The sidebar is therefore arranged by
+workflow, and the workbook mapping lives on the All modules page:
+
+| Section | Modules |
+| --- | --- |
+| **Sell** | Invoices · Deliveries · Customer balances |
+| **Buy** | Goods receipts · Supplier bills · Supplier balances |
+| **Stock** | Items · Warehouses · Transfers · Adjustments · Valuation · Stock alerts |
+| **Accounting** | Chart of accounts · General ledger · Cash & bank · Expenses · Tax & VAT |
+| **Reports** | Financial reports · Inventory reports |
+| **Workflow** | Approvals · Notifications · Documents · Audit trail |
+| **Settings** (hub at `/settings`) | Company settings · Users & roles · Import & export · Companies & branches · Backup & security |
+
+- Only the section you are in is expanded, so the menu shows about eight links instead of
+  twenty-nine; opening or closing a section by hand overrides that for the session.
+- **Ctrl/Cmd-K** opens a jump-to-module palette that searches all 29 modules by menu label,
+  workbook name or keyword — this is what lets the sidebar stay short.
+- `/modules` lists every module twice: by workflow section and by workbook category, each
+  with its transcribed feature list and delivery phase, so scope can still be checked
+  against the proposal.
+- Route paths were not changed by the regrouping; `src/lib/nav.ts` is the single registry
+  and carries `moduleName`, `workbookCategory` and `app` for every entry.
+
 ## Accounting & Finance screens
 
 All ten workbook modules in the category have a screen. Each page is a server component
@@ -140,6 +167,29 @@ client-view split and the same shared components.
 
 All 29 workbook modules now have a screen (28 module routes plus the dashboard). The catch-all
 scope page stays as a safety net for unknown routes.
+
+## Layout and density rules
+
+Every screen is built from the same four parts, in the same order, with one rhythm
+(`page-stack`, 20px between blocks):
+
+1. **Header** — title, one short line of context, a `Scope` disclosure and actions.
+   The workbook's full feature list and any delivery caveat live inside `Scope`, read from
+   the module registry, so no page carries a 140-character subtitle or a stack of badges.
+2. **Figures** — `SummaryStrip`: borderless, divided by hairlines, sitting on the page
+   plane so the panels below stay the heaviest thing on screen.
+3. **Panels** — bordered surfaces holding a toolbar plus a table, or a chart.
+4. **Tables** — sticky header, hairline rules, tabular figures, hover tint, no zebra.
+
+Other rules that keep it calm:
+
+- **One primary action per screen.** Everything else folds into the header's overflow menu.
+- **Status is a dot plus a word**, never a saturated chip; only states that demand action
+  (overdue, reversed) take coloured text.
+- **The top bar holds one context control.** Company, branch and financial year are a
+  single posting context in one chip; document creation is one `+ New` menu.
+- **Type roles, not ad-hoc sizes:** `t-page-title`, `t-panel-title`, `t-eyebrow`,
+  `t-figure`, `t-figure-sm`, `t-caption` are defined once in `globals.css`.
 
 ## Conventions worth keeping
 

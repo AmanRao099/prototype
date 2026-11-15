@@ -40,16 +40,12 @@ export default async function ExpensesPage() {
     .sort((a, b) => b.value - a.value);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Expense Management"
-        subtitle="Expense categories, vouchers, recurring expenses, department allocation, approvals and attachments"
-        phase="phase2"
-        actions={
-          <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-            New expense voucher
-          </ActionButton>
-        }
+        subtitle="Expense vouchers by category and department"
+        note="Scheduled for Phase 2. The register reads the same API shape as the other accounting screens, so recurring schedules, approval routing and budgets layer on without reworking the view."
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New expense voucher</ActionButton>}
       />
 
       <p className="flex items-start gap-2 rounded-xl border border-hairline bg-surface px-4 py-3 text-[12px] text-ink-secondary">

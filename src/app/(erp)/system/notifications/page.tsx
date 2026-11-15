@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CheckCheck, Settings2 } from "lucide-react";
+import { CheckCheck } from "lucide-react";
 import { NotificationsView } from "./notifications-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -17,19 +17,12 @@ export default async function NotificationsPage() {
   const email = notifications.filter((notification) => notification.channel === "email").length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Notifications"
-        subtitle="Payment due, low stock, expiry, pending approval and system alerts"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Settings2 className="size-3.5" />}>Notification rules</ActionButton>
-            <ActionButton variant="primary" icon={<CheckCheck className="size-3.5" />}>
-              Mark all read
-            </ActionButton>
-          </>
-        }
+        subtitle="Alerts across the system"
+        secondaryActions={[{ label: "Notification rules" }]}
+        actions={<ActionButton variant="primary" icon={<CheckCheck className="size-3.5" />}>Mark all read</ActionButton>}
       />
 
       <SummaryStrip

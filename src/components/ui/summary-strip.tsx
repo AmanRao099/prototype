@@ -17,27 +17,30 @@ const TONE: Record<NonNullable<SummaryItem["tone"]>, string> = {
 };
 
 /**
- * Compact figure row above a register. Lighter than a dashboard KPI tile:
- * these summarise the list below rather than tracking a metric over time.
+ * Figures that summarise the list below. Deliberately not a card: it sits on
+ * the page plane with hairline dividers, so the panels underneath stay the
+ * heaviest thing on the screen.
  */
 export function SummaryStrip({ items }: { items: SummaryItem[] }) {
   return (
-    <div className="grid grid-cols-2 overflow-hidden rounded-[10px] border border-hairline bg-surface shadow-panel md:grid-cols-4">
+    <div className="grid grid-cols-2 gap-y-5 border-y border-hairline py-4 md:grid-cols-4 md:gap-y-0">
       {items.map((item, index) => (
         <div
           key={item.label}
           className={cn(
-            "px-4 py-3.5",
-            index % 2 === 1 && "border-l border-hairline",
-            index >= 2 && "border-t border-hairline md:border-t-0",
-            index >= 1 && "md:border-l md:border-hairline",
+            "px-4 first:pl-0",
+            index % 2 === 1 && "border-l border-hairline md:border-l",
+            index >= 2 && "md:border-l",
+            index === 2 && "md:pl-4",
           )}
         >
           <p className="t-eyebrow flex items-center gap-1.5">
             {item.icon}
             {item.label}
           </p>
-          <p className={cn("t-figure-sm mt-2 tnum", TONE[item.tone ?? "default"])}>{item.value}</p>
+          <p className={cn("t-figure-sm mt-2 truncate tnum", TONE[item.tone ?? "default"])}>
+            {item.value}
+          </p>
           {item.caption ? <p className="t-caption mt-1.5 truncate">{item.caption}</p> : null}
         </div>
       ))}

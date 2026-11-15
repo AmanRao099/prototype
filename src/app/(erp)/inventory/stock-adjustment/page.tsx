@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ClipboardList, Plus, ShieldAlert } from "lucide-react";
+import { Plus, ShieldAlert } from "lucide-react";
 import { AdjustmentView } from "./adjustment-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -24,19 +24,13 @@ export default async function StockAdjustmentPage() {
   const counts = posted.filter((adjustment) => adjustment.reason === "physical_count").length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Stock Adjustment"
-        subtitle="Positive and negative adjustments, damaged and expired stock, physical verification, reconciliation and approvals"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<ClipboardList className="size-3.5" />}>Start count sheet</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New adjustment
-            </ActionButton>
-          </>
-        }
+        subtitle="Authorised corrections to stock on hand"
+        note="Adjustments are the only way to change stock on hand outside a posted movement. Every line carries a reason, an authoriser and an audit entry; direct edits to a quantity field are not permitted."
+        secondaryActions={[{ label: "Start count sheet" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New adjustment</ActionButton>}
       />
 
       <SummaryStrip
@@ -68,11 +62,6 @@ export default async function StockAdjustmentPage() {
         ]}
       />
 
-      <p className="rounded-[10px] border border-hairline bg-surface px-4 py-3 text-[12px] text-ink-secondary">
-        Adjustments are the only way to change stock on hand outside a posted movement. Every line
-        carries a reason, an authoriser and an audit entry; direct edits to a quantity field are not
-        permitted.
-      </p>
 
       <AdjustmentView adjustments={adjustments} />
     </div>

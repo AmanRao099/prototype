@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Download, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { PurchaseView } from "./purchase-view";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
@@ -24,19 +24,12 @@ export default async function PurchaseInvoicingPage() {
   ).length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Purchase & Supplier Invoicing"
-        subtitle="Purchase invoices, cash purchases, returns, debit notes, VAT, additional charges and landed cost"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Download className="size-3.5" />}>Purchase register</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New purchase invoice
-            </ActionButton>
-          </>
-        }
+        subtitle="Supplier bills, goods-receipt matching and input VAT"
+        secondaryActions={[{ label: "Purchase register" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New purchase invoice</ActionButton>}
       />
 
       <SummaryStrip

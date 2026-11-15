@@ -3,32 +3,55 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Bell, ChevronRight, Lock, Menu, Plus } from "lucide-react";
+import { Bell, Check, ChevronDown, ChevronRight, Lock, Menu, Plus, Search } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
-import { Badge } from "@/components/ui/badge";
 import { findNavItem } from "@/lib/nav";
 import type { Company, SessionUser } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
+const QUICK_CREATE = [
+  { label: "Sales invoice", href: "/accounting/sales-invoicing" },
+  { label: "Purchase invoice", href: "/accounting/purchase-invoicing" },
+  { label: "Receipt", href: "/accounting/cash-bank" },
+  { label: "Payment", href: "/accounting/cash-bank" },
+  { label: "Goods receipt", href: "/inventory/stock-inward" },
+  { label: "Stock issue", href: "/inventory/stock-outward" },
+];
+
+/**
+ * The bar carried eight separate controls, two of them raw selects. Company,
+ * branch and financial year are one posting context, so they share one chip,
+ * and document creation is one menu instead of a single hard-coded button.
+ */
 export function Topbar({
   company,
   user,
   alertCount,
   onOpenMobileNav,
+  onOpenSearch,
 }: {
   company: Company;
   user: SessionUser;
   alertCount: number;
   onOpenMobileNav: () => void;
+  onOpenSearch: () => void;
 }) {
   const pathname = usePathname();
   const match = findNavItem(pathname);
+  const hubTitle =
+    pathname === "/modules" ? "All modules" : pathname === "/settings" ? "Settings" : undefined;
+
   const [branchId, setBranchId] = useState(company.branches[0]?.id ?? "");
   const activeFy = company.financialYears.find((year) => year.isActive) ?? company.financialYears[0];
   const [fyId, setFyId] = useState(activeFy?.id ?? "");
-  const selectedFy = company.financialYears.find((year) => year.id === fyId);
+  const [contextOpen, setContextOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const branch = company.branches.find((entry) => entry.id === branchId);
+  const financialYear = company.financialYears.find((year) => year.id === fyId);
 
   return (
-    <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-hairline bg-surface/85 px-3 backdrop-blur-md sm:px-4">
+    <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-hairline bg-surface/85 px-4 backdrop-blur-md sm:px-6">
       <button
         type="button"
         onClick={onOpenMobileNav}
@@ -40,90 +63,147 @@ export function Topbar({
 
       <nav aria-label="Breadcrumb" className="min-w-0 flex-1">
         <ol className="flex min-w-0 items-center gap-1.5 text-[12px]">
-          <li className="hidden shrink-0 text-ink-muted sm:block">{company.name}</li>
-          {match?.group ? (
+          {match?.section ? (
             <>
+              <li className="hidden shrink-0 text-ink-muted sm:block">{match.section.title}</li>
               <ChevronRight className="hidden size-3 shrink-0 text-ink-muted/60 sm:block" aria-hidden />
-              <li className="hidden shrink-0 text-ink-muted md:block">{match.group.title}</li>
             </>
           ) : null}
-          <ChevronRight className="hidden size-3 shrink-0 text-ink-muted/60 sm:block" aria-hidden />
           <li className="min-w-0 truncate font-medium text-ink">
-            {match?.item.label ?? "Workspace"}
+            {match?.item.label ?? hubTitle ?? "Workspace"}
           </li>
         </ol>
       </nav>
 
-      <div className="flex shrink-0 items-center gap-2">
-        <label className="hidden md:block">
-          <span className="sr-only">Branch</span>
-          <select
-            value={branchId}
-            onChange={(event) => setBranchId(event.target.value)}
-            className="field select-field pl-2.5"
+      <div className="flex shrink-0 items-center gap-1.5">
+        {/* posting context: company, branch and financial year in one control */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setContextOpen((open) => !open)}
+            aria-expanded={contextOpen}
+            className="flex h-[30px] items-center gap-2 rounded-lg border border-hairline px-2.5 text-[11.5px] text-ink-secondary transition-colors hover:border-hairline-strong hover:text-ink"
           >
-            {company.branches.map((branch) => (
-              <option key={branch.id} value={branch.id}>
-                {branch.name}
-              </option>
-            ))}
-          </select>
-        </label>
+            <span className="hidden font-medium text-ink sm:inline">{company.name}</span>
+            <span className="hidden text-ink-muted sm:inline">·</span>
+            <span className="max-w-[90px] truncate">{branch?.name}</span>
+            <span className="hidden text-ink-muted md:inline">· {financialYear?.label}</span>
+            {financialYear?.isLocked ? (
+              <Lock className="size-3 shrink-0 text-warning" aria-label="Period locked" />
+            ) : null}
+            <ChevronDown className="size-3.5 shrink-0 text-ink-muted" aria-hidden />
+          </button>
 
-        <label className="hidden lg:block">
-          <span className="sr-only">Financial year</span>
-          <select
-            value={fyId}
-            onChange={(event) => setFyId(event.target.value)}
-            className="field select-field pl-2.5"
+          {contextOpen ? (
+            <>
+              <div className="fixed inset-0 z-20" onClick={() => setContextOpen(false)} aria-hidden />
+              <div className="absolute right-0 z-30 mt-1 w-[240px] overflow-hidden rounded-lg border border-hairline-strong bg-surface shadow-raised">
+                <p className="t-eyebrow border-b border-hairline px-3 py-2">Branch</p>
+                <ul className="py-1">
+                  {company.branches.map((entry) => (
+                    <li key={entry.id}>
+                      <button
+                        type="button"
+                        onClick={() => setBranchId(entry.id)}
+                        className="flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-[12px] text-ink-secondary hover:bg-surface-2 hover:text-ink"
+                      >
+                        <span className="truncate">{entry.name}</span>
+                        {entry.id === branchId ? (
+                          <Check className="size-3.5 shrink-0 text-accent" aria-hidden />
+                        ) : null}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <p className="t-eyebrow border-y border-hairline px-3 py-2">Financial year</p>
+                <ul className="py-1">
+                  {company.financialYears.map((year) => (
+                    <li key={year.id}>
+                      <button
+                        type="button"
+                        onClick={() => setFyId(year.id)}
+                        className="flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-[12px] text-ink-secondary hover:bg-surface-2 hover:text-ink"
+                      >
+                        <span className="truncate">
+                          {year.label}
+                          {year.isLocked ? (
+                            <span className="ml-1.5 text-[10.5px] text-ink-muted">locked</span>
+                          ) : null}
+                        </span>
+                        {year.id === fyId ? (
+                          <Check className="size-3.5 shrink-0 text-accent" aria-hidden />
+                        ) : null}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          ) : null}
+        </div>
+
+        {/* quick create */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setCreateOpen((open) => !open)}
+            aria-expanded={createOpen}
+            className="inline-flex h-[30px] items-center gap-1.5 rounded-lg bg-accent px-2.5 text-[11.5px] font-medium text-on-accent transition-colors hover:bg-accent-hover"
           >
-            {company.financialYears.map((year) => (
-              <option key={year.id} value={year.id}>
-                {year.label}
-              </option>
-            ))}
-          </select>
-        </label>
+            <Plus className="size-3.5" aria-hidden />
+            <span className="hidden sm:inline">New</span>
+          </button>
+          {createOpen ? (
+            <>
+              <div className="fixed inset-0 z-20" onClick={() => setCreateOpen(false)} aria-hidden />
+              <ul className="absolute right-0 z-30 mt-1 min-w-[190px] overflow-hidden rounded-lg border border-hairline-strong bg-surface py-1 shadow-raised">
+                {QUICK_CREATE.map((entry) => (
+                  <li key={entry.label}>
+                    <Link
+                      href={entry.href}
+                      onClick={() => setCreateOpen(false)}
+                      className="block px-3 py-1.5 text-[12px] text-ink-secondary hover:bg-surface-2 hover:text-ink"
+                    >
+                      {entry.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </div>
 
-        {selectedFy?.isLocked ? (
-          <Badge tone="warning" dot>
-            <Lock className="size-3" aria-hidden />
-            Period locked
-          </Badge>
-        ) : null}
-
-        <Link
-          href="/accounting/sales-invoicing"
-          className="hidden h-[30px] items-center gap-1.5 rounded-lg bg-accent px-2.5 text-[11.5px] font-medium text-on-accent transition-colors hover:bg-accent-hover sm:inline-flex"
+        <button
+          type="button"
+          onClick={onOpenSearch}
+          className="grid size-[30px] place-items-center rounded-lg text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink lg:hidden"
+          aria-label="Search modules"
         >
-          <Plus className="size-3.5" aria-hidden />
-          New invoice
-        </Link>
+          <Search className="size-4" aria-hidden />
+        </button>
 
         <Link
           href="/system/notifications"
-          className="relative grid size-[30px] place-items-center rounded-lg border border-hairline text-ink-secondary transition-colors hover:bg-surface-2 hover:text-ink"
+          className={cn(
+            "relative grid size-[30px] place-items-center rounded-lg transition-colors hover:bg-surface-2",
+            pathname === "/system/notifications" ? "text-ink" : "text-ink-muted hover:text-ink",
+          )}
           aria-label={`Notifications, ${alertCount} unread`}
         >
           <Bell className="size-4" />
           {alertCount > 0 ? (
-            <span className="absolute -top-1.5 -right-1.5 grid min-w-[16px] place-items-center rounded-full bg-critical px-1 text-[9px] leading-[15px] font-semibold tnum text-white ring-2 ring-surface">
-              {alertCount}
-            </span>
+            <span className="absolute top-0.5 right-0.5 size-1.5 rounded-full bg-critical ring-2 ring-surface" />
           ) : null}
         </Link>
 
         <ThemeToggle />
 
-        <div className="ml-1 flex items-center gap-2 border-l border-hairline pl-3">
-          <span className="grid size-7 shrink-0 place-items-center rounded-full bg-surface-2 text-[10.5px] font-semibold text-ink-secondary ring-1 ring-hairline">
-            {user.initials}
-          </span>
-          <span className="hidden min-w-0 leading-tight xl:block">
-            <span className="block truncate text-[12px] font-medium text-ink">{user.name}</span>
-            <span className="block truncate text-[10px] text-ink-muted">{user.roleName}</span>
-          </span>
-        </div>
+        <span
+          className="ml-1 grid size-7 shrink-0 place-items-center rounded-full bg-surface-2 text-[10.5px] font-semibold text-ink-secondary ring-1 ring-hairline"
+          title={`${user.name} · ${user.roleName}`}
+        >
+          {user.initials}
+        </span>
       </div>
     </header>
   );

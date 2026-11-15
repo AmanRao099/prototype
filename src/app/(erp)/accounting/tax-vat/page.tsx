@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Download, Settings2 } from "lucide-react";
 import { VatView } from "./vat-view";
-import { ActionButton, PageHeader } from "@/components/ui/page-header";
+import { PageHeader } from "@/components/ui/page-header";
 import { SummaryStrip } from "@/components/ui/summary-strip";
 import { getVatReturn } from "@/lib/api/client";
 import { formatDate, formatMoneyCompact, toNumber } from "@/lib/format";
@@ -22,18 +21,12 @@ export default async function TaxVatPage() {
     : 0;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Tax & VAT"
-        subtitle="VAT configuration, standard/zero-rated/exempt transactions, input and output VAT, adjustments and return reports"
-        phase="limited"
-        phaseNote="One jurisdiction in Phase 1"
-        actions={
-          <>
-            <ActionButton icon={<Settings2 className="size-3.5" />}>Tax settings</ActionButton>
-            <ActionButton icon={<Download className="size-3.5" />}>Transaction report</ActionButton>
-          </>
-        }
+        subtitle="Return workings, tax codes and filing history"
+        note="One tax jurisdiction in Phase 1. The return workings and transaction report are produced here; filing stays a manual step."
+        secondaryActions={[{ label: "Tax settings" }, { label: "Transaction report" }]}
       />
 
       <SummaryStrip

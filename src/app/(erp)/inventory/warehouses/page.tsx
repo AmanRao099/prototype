@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus, Settings2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { RankedBars } from "@/components/charts/ranked-bars";
 import { CellStack, DataTable, type Column } from "@/components/ui/data-table";
 import { ActionButton, PageHeader } from "@/components/ui/page-header";
@@ -74,19 +74,12 @@ export default async function WarehousesPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="page-stack">
       <PageHeader
         title="Warehouse Management"
-        subtitle="Multiple warehouses, locations and bins, warehouse-wise stock, allocation and valuation"
-        phase="mvp"
-        actions={
-          <>
-            <ActionButton icon={<Settings2 className="size-3.5" />}>Bin layout</ActionButton>
-            <ActionButton variant="primary" icon={<Plus className="size-3.5" />}>
-              New warehouse
-            </ActionButton>
-          </>
-        }
+        subtitle="Locations, capacity and stock value"
+        secondaryActions={[{ label: "Bin layout" }]}
+        actions={<ActionButton variant="primary" icon={<Plus className="size-3.5" />}>New warehouse</ActionButton>}
       />
 
       <SummaryStrip
