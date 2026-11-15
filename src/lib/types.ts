@@ -382,3 +382,145 @@ export interface ReportDefinition {
   lastRunOn?: string;
   href?: string;
 }
+
+/* ------------------------------------------------------------------------- *
+ * Inventory & Stock
+ * Entities mirror the planned DRF serializers for the `inventory` app.
+ * ------------------------------------------------------------------------- */
+
+export type TrackingMode = "none" | "batch" | "serial";
+
+export interface Item {
+  id: string;
+  sku: string;
+  name: string;
+  category: string;
+  brand: string;
+  unit: string;
+  /** Alternate unit and how many base units it holds, e.g. BOX = 12 PCS. */
+  altUnit?: string;
+  conversion?: number;
+  barcode: string;
+  purchasePrice: Money;
+  sellingPrice: Money;
+  taxCode: string;
+  tracking: TrackingMode;
+  reorderLevel: number;
+  onHand: number;
+  reserved: number;
+  available: number;
+  stockValue: Money;
+  isActive: boolean;
+}
+
+export interface Warehouse {
+  id: string;
+  code: string;
+  name: string;
+  kind: "main" | "depot" | "bonded" | "retail" | "transit";
+  location: string;
+  binCount: number;
+  skuCount: number;
+  stockValue: Money;
+  utilisationPct: number;
+  manager: string;
+  isActive: boolean;
+}
+
+export type MovementStatus =
+  | "draft"
+  | "pending_approval"
+  | "posted"
+  | "in_transit"
+  | "received"
+  | "cancelled";
+
+export interface GoodsReceipt {
+  id: string;
+  number: string;
+  date: string;
+  sourceType: "purchase_receipt" | "direct_entry" | "opening_stock" | "sales_return";
+  reference?: string;
+  party: string;
+  warehouse: string;
+  lineCount: number;
+  quantity: number;
+  value: Money;
+  tracked: TrackingMode;
+  status: MovementStatus;
+  receivedBy: string;
+}
+
+export interface StockIssue {
+  id: string;
+  number: string;
+  date: string;
+  issueType: "sales_delivery" | "internal_consumption" | "damaged" | "sample";
+  reference?: string;
+  party: string;
+  warehouse: string;
+  lineCount: number;
+  quantity: number;
+  value: Money;
+  status: MovementStatus;
+  issuedBy: string;
+}
+
+export interface StockTransferDoc {
+  id: string;
+  number: string;
+  date: string;
+  fromWarehouse: string;
+  toWarehouse: string;
+  lineCount: number;
+  quantity: number;
+  value: Money;
+  status: MovementStatus;
+  dispatchedOn?: string;
+  receivedOn?: string;
+  requestedBy: string;
+}
+
+export interface StockAdjustmentDoc {
+  id: string;
+  number: string;
+  date: string;
+  warehouse: string;
+  reason: "damage" | "expiry" | "physical_count" | "shortage" | "reclassification";
+  direction: "increase" | "decrease";
+  lineCount: number;
+  quantity: number;
+  value: Money;
+  status: MovementStatus;
+  requestedBy: string;
+  approvedBy?: string;
+}
+
+export interface ValuationRow {
+  id: string;
+  sku: string;
+  item: string;
+  warehouse: string;
+  quantity: number;
+  unit: string;
+  weightedAvgRate: Money;
+  fifoRate: Money;
+  landedCost: Money;
+  value: Money;
+  lastMovementOn: string;
+}
+
+export interface StockLedgerRow {
+  id: string;
+  date: string;
+  reference: string;
+  movementType: string;
+  item: string;
+  sku: string;
+  warehouse: string;
+  inQty: number;
+  outQty: number;
+  balanceQty: number;
+  rate: Money;
+  value: Money;
+}

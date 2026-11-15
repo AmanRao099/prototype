@@ -107,6 +107,23 @@ Shared pieces live in `src/components/ui` (`DataTable`, `Toolbar`, `Tabs`, `Summ
 `PageHeader`, `StatusPill`) and `src/components/accounting/party-ledger-view.tsx`, which
 serves both receivable and payable.
 
+## Inventory & Stock screens
+
+All nine workbook modules in the category have a screen, built on the same server-page +
+client-view split and the same shared components.
+
+| Route | Screen |
+| --- | --- |
+| `/inventory/items` | Item master: SKU, barcode, units and conversions, prices, tracking mode, on hand / reserved / available, reorder level |
+| `/inventory/warehouses` | Locations and bins, stock value and space utilisation per warehouse, in-transit holding |
+| `/inventory/stock-inward` | Goods receipts: purchase receipt, direct entry, opening stock, sales return; batch/serial flag; quantity and value |
+| `/inventory/stock-outward` | Stock issues: sales delivery, internal consumption, damage, samples; cost of goods issued; reservations |
+| `/inventory/stock-transfer` | Transfer requests, dispatch, in-transit and receipt confirmation with dates |
+| `/inventory/stock-adjustment` | Positive/negative adjustments with reason, authoriser and net value impact |
+| `/inventory/valuation` | Weighted-average and FIFO side by side, landed cost, closing value, reconciliation to the control account |
+| `/inventory/alerts` | Low stock, reorder, expiry, negative stock, overstock, non-moving, reservation conflicts |
+| `/inventory/reporting` | Stock ledger with running quantity and value, plus the inventory report catalogue |
+
 ## Conventions worth keeping
 
 - **Design tokens only.** Colours come from `globals.css` custom properties; dark mode is a

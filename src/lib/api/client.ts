@@ -20,6 +20,17 @@ import {
   MOCK_VAT_BOXES,
   MOCK_VAT_PERIODS,
 } from "@/lib/mock/accounting";
+import {
+  MOCK_ADJUSTMENTS,
+  MOCK_GOODS_RECEIPTS,
+  MOCK_INVENTORY_REPORTS,
+  MOCK_ITEMS,
+  MOCK_STOCK_ISSUES,
+  MOCK_STOCK_LEDGER,
+  MOCK_TRANSFERS,
+  MOCK_VALUATION,
+  MOCK_WAREHOUSES,
+} from "@/lib/mock/inventory";
 import type {
   Account,
   CashBankAccount,
@@ -27,6 +38,9 @@ import type {
   Company,
   DashboardData,
   ExpenseVoucher,
+  GoodsReceipt,
+  InventoryAlert,
+  Item,
   JournalEntry,
   LedgerRow,
   Party,
@@ -36,10 +50,16 @@ import type {
   ReportDefinition,
   SalesInvoice,
   SessionUser,
+  StockAdjustmentDoc,
+  StockIssue,
+  StockLedgerRow,
+  StockTransferDoc,
   TaxCode,
   TrialBalanceRow,
+  ValuationRow,
   VatBox,
   VatReturnPeriod,
+  Warehouse,
 } from "@/lib/types";
 
 /**
@@ -188,4 +208,65 @@ export async function getTrialBalance(): Promise<TrialBalanceRow[]> {
 export async function getReportCatalogue(): Promise<ReportDefinition[]> {
   if (USING_MOCK_DATA) return MOCK_REPORTS;
   return request<ReportDefinition[]>("/api/accounting/reports/");
+}
+
+/* ------------------------------------------------------------------------- *
+ * Inventory & Stock
+ *
+ * Planned endpoints (Django REST Framework, `inventory` app):
+ *   GET /api/inventory/items/           GET /api/inventory/warehouses/
+ *   GET /api/inventory/goods-receipts/  GET /api/inventory/issues/
+ *   GET /api/inventory/transfers/       GET /api/inventory/adjustments/
+ *   GET /api/inventory/valuation/       GET /api/inventory/ledger/
+ *   GET /api/inventory/alerts/          GET /api/inventory/reports/
+ * ------------------------------------------------------------------------- */
+
+export async function getItems(): Promise<Item[]> {
+  if (USING_MOCK_DATA) return MOCK_ITEMS;
+  return request<Item[]>("/api/inventory/items/");
+}
+
+export async function getWarehouses(): Promise<Warehouse[]> {
+  if (USING_MOCK_DATA) return MOCK_WAREHOUSES;
+  return request<Warehouse[]>("/api/inventory/warehouses/");
+}
+
+export async function getGoodsReceipts(): Promise<GoodsReceipt[]> {
+  if (USING_MOCK_DATA) return MOCK_GOODS_RECEIPTS;
+  return request<GoodsReceipt[]>("/api/inventory/goods-receipts/");
+}
+
+export async function getStockIssues(): Promise<StockIssue[]> {
+  if (USING_MOCK_DATA) return MOCK_STOCK_ISSUES;
+  return request<StockIssue[]>("/api/inventory/issues/");
+}
+
+export async function getStockTransfers(): Promise<StockTransferDoc[]> {
+  if (USING_MOCK_DATA) return MOCK_TRANSFERS;
+  return request<StockTransferDoc[]>("/api/inventory/transfers/");
+}
+
+export async function getStockAdjustments(): Promise<StockAdjustmentDoc[]> {
+  if (USING_MOCK_DATA) return MOCK_ADJUSTMENTS;
+  return request<StockAdjustmentDoc[]>("/api/inventory/adjustments/");
+}
+
+export async function getValuation(): Promise<ValuationRow[]> {
+  if (USING_MOCK_DATA) return MOCK_VALUATION;
+  return request<ValuationRow[]>("/api/inventory/valuation/");
+}
+
+export async function getStockLedger(): Promise<StockLedgerRow[]> {
+  if (USING_MOCK_DATA) return MOCK_STOCK_LEDGER;
+  return request<StockLedgerRow[]>("/api/inventory/ledger/");
+}
+
+export async function getInventoryAlerts(): Promise<InventoryAlert[]> {
+  if (USING_MOCK_DATA) return (await getDashboard("mtd")).alerts;
+  return request<InventoryAlert[]>("/api/inventory/alerts/");
+}
+
+export async function getInventoryReports(): Promise<typeof MOCK_INVENTORY_REPORTS> {
+  if (USING_MOCK_DATA) return MOCK_INVENTORY_REPORTS;
+  return request<typeof MOCK_INVENTORY_REPORTS>("/api/inventory/reports/");
 }
