@@ -23,12 +23,12 @@ const TONE: Record<NonNullable<SummaryItem["tone"]>, string> = {
  */
 export function SummaryStrip({ items }: { items: SummaryItem[] }) {
   return (
-    <div className="grid grid-cols-2 gap-y-7 rounded-[18px] border border-hairline bg-surface px-1 py-5 md:grid-cols-4 md:gap-y-0">
+    <div className="grid grid-cols-2 gap-y-6 rounded-[18px] border border-hairline bg-surface py-4 sm:px-1 sm:py-5 md:grid-cols-4 md:gap-y-0">
       {items.map((item, index) => (
         <div
           key={item.label}
           className={cn(
-            "px-5",
+            "px-4 sm:px-5",
             index % 2 === 1 && "border-l border-hairline md:border-l",
             index >= 2 && "md:border-l",
             index === 2 && "md:pl-4",

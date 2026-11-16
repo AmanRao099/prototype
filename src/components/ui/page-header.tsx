@@ -49,19 +49,19 @@ export function PageHeader({
           {subtitle ? <p className="t-caption mt-1">{subtitle}</p> : null}
         </div>
 
-        <div className="flex shrink-0 items-center gap-1.5">
+        <div className="flex shrink-0 flex-wrap items-center gap-1.5">
           {item || note ? (
             <button
               type="button"
               onClick={() => setScopeOpen((open) => !open)}
               aria-expanded={scopeOpen}
               className={cn(
-                "inline-flex h-[34px] items-center gap-1.5 rounded-full px-3 text-[12.5px] font-medium",
+                "inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-medium sm:h-[34px]",
                 scopeOpen ? "bg-surface-2 text-ink" : "text-ink-muted hover:bg-surface-2 hover:text-ink",
               )}
             >
               <Info className="size-3.5" aria-hidden />
-              Scope
+              <span className="hidden sm:inline">Scope</span>
             </button>
           ) : null}
 
@@ -72,7 +72,7 @@ export function PageHeader({
                 onClick={() => setMenuOpen((open) => !open)}
                 aria-expanded={menuOpen}
                 aria-label="More actions"
-                className="grid size-[34px] place-items-center rounded-full border border-hairline text-ink-secondary hover:bg-surface-2 hover:text-ink"
+                className="grid size-10 place-items-center rounded-full border border-hairline text-ink-secondary hover:bg-surface-2 hover:text-ink sm:size-[34px]"
               >
                 <MoreHorizontal className="size-4" aria-hidden />
               </button>
@@ -83,7 +83,7 @@ export function PageHeader({
                     onClick={() => setMenuOpen(false)}
                     aria-hidden
                   />
-                  <ul className="absolute right-0 z-30 mt-1.5 min-w-[210px] overflow-hidden rounded-[14px] border border-hairline bg-surface p-1 shadow-raised">
+                  <ul className="absolute right-0 z-30 mt-1.5 w-[min(80vw,230px)] overflow-hidden rounded-[14px] border border-hairline bg-surface p-1 shadow-raised">
                     {secondaryActions.map((action) => (
                       <li key={action.label}>
                         <button
@@ -107,7 +107,7 @@ export function PageHeader({
       </div>
 
       {scopeOpen && item ? (
-        <div className="rounded-[18px] border border-hairline bg-surface px-5 py-4">
+        <div className="rounded-[18px] border border-hairline bg-surface px-4 py-4 sm:px-5">
           <p className="t-eyebrow">
             {item.moduleName} · {PHASE_LABEL[item.phase]}
           </p>
@@ -149,7 +149,7 @@ export function ActionButton({
     <button
       type="button"
       className={cn(
-        "inline-flex h-[34px] items-center gap-1.5 rounded-full px-4 text-[12.5px] font-medium",
+        "inline-flex h-10 items-center gap-1.5 rounded-full px-4 text-[12.5px] font-medium sm:h-[34px]",
         variant === "primary" && "bg-accent text-on-accent hover:bg-accent-hover",
         variant === "secondary" &&
           "border border-hairline bg-surface text-ink-secondary hover:border-hairline-strong hover:text-ink",

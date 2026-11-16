@@ -225,7 +225,7 @@ body {
 /* tight, settled cadence; body copy keeps editorial leading.              */
 /* ----------------------------------------------------------------------- */
 .t-page-title {
-  font-size: 23px;
+  font-size: 20px;
   font-weight: 600;
   line-height: 1.18;
   letter-spacing: -0.021em;
@@ -250,7 +250,7 @@ body {
 }
 
 .t-figure {
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.024em;
@@ -277,11 +277,47 @@ body {
   color: var(--ink-muted);
 }
 
-/* Vertical rhythm shared by every screen. */
+/* Display sizes step up once there is room for them. */
+@media (min-width: 640px) {
+  .t-page-title {
+    font-size: 23px;
+  }
+
+  .t-figure {
+    font-size: 30px;
+  }
+}
+
+/* Vertical rhythm shared by every screen - tighter on a phone. */
 .page-stack {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
+}
+
+@media (min-width: 640px) {
+  .page-stack {
+    gap: 24px;
+  }
+}
+
+/* A scrolling row of chips should not show a bar on top of the chips. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Keep content clear of the home indicator and any notch. */
+.safe-b {
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+
+.safe-l {
+  padding-left: env(safe-area-inset-left);
 }
 
 .tnum {
@@ -300,7 +336,7 @@ body {
 /* Controls                                                                 */
 /* ----------------------------------------------------------------------- */
 .field {
-  height: 34px;
+  height: 40px;
   border-radius: 11px;
   border: 1px solid var(--hairline);
   background: var(--surface);
@@ -313,9 +349,25 @@ body {
     background-color 160ms ease;
 }
 
+/* Touch comes first: controls shrink to desktop size only on a pointer-sized
+   screen, so a phone keeps targets near the 44px minimum. */
+@media (min-width: 640px) {
+  .field {
+    height: 34px;
+  }
+}
+
 /* Search is pill-shaped - the shape itself says "type here". */
 .field-pill {
   border-radius: 980px;
+}
+
+@media (max-width: 639px) {
+  input.field,
+  select.field,
+  textarea.field {
+    font-size: 16px; /* anything smaller makes iOS zoom the page on focus */
+  }
 }
 
 .field::placeholder {

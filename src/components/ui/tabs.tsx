@@ -27,7 +27,7 @@ export function Tabs({
     <div
       role="tablist"
       className={cn(
-        "inline-flex w-fit max-w-full items-center gap-1 self-start overflow-x-auto rounded-full bg-control-track p-[3px]",
+        "no-scrollbar inline-flex w-fit max-w-full items-center gap-1 self-start overflow-x-auto rounded-full bg-control-track p-[3px]",
         className,
       )}
     >
@@ -41,7 +41,7 @@ export function Tabs({
             aria-selected={selected}
             onClick={() => onChange(tab.id)}
             className={cn(
-              "rounded-full px-3.5 py-1.5 text-[12.5px] font-medium",
+              "shrink-0 rounded-full px-3.5 py-2 text-[12.5px] font-medium whitespace-nowrap sm:py-1.5",
               selected
                 ? "bg-control-active text-ink"
                 : "text-ink-muted hover:text-ink-secondary",

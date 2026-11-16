@@ -9,6 +9,9 @@ import { useElementWidth } from "@/lib/use-element-width";
 
 const SERIES_COLORS = ["var(--series-1)", "var(--series-2)", "var(--series-3)"];
 const PAD = { top: 18, right: 58, bottom: 28, left: 48 };
+/** On a phone the axis gutter and the end labels eat the plot, so drop them. */
+const NARROW = 440;
+const PAD_NARROW = { top: 18, right: 10, bottom: 26, left: 34 };
 
 export interface LinePoint {
   label: string;
@@ -36,13 +39,15 @@ export function LineChart({
   const titleId = useId();
 
   const geo = useMemo(() => {
+    const narrow = width > 0 && width < NARROW;
+    const pad = narrow ? PAD_NARROW : PAD;
     const max = niceCeil(Math.max(...points.flatMap((point) => point.values)));
-    const plotW = Math.max(width - PAD.left - PAD.right, 80);
-    const plotH = Math.max(height - PAD.top - PAD.bottom, 60);
+    const plotW = Math.max(width - pad.left - pad.right, 80);
+    const plotH = Math.max(height - pad.top - pad.bottom, 60);
     const stepX = plotW / Math.max(points.length - 1, 1);
-    const x = (index: number) => PAD.left + index * stepX;
-    const y = (value: number) => PAD.top + plotH * (1 - value / max);
-    const labelEvery = stepX < 44 ? 2 : 1;
+    const x = (index: number) => pad.left + index * stepX;
+    const y = (value: number) => pad.top + plotH * (1 - value / max);
+    const labelEvery = Math.max(Math.ceil(44 / Math.max(stepX, 1)), 1);
 
     const series = seriesNames.map((name, seriesIndex) => ({
       name,
@@ -56,12 +61,23 @@ export function LineChart({
       lastValue: points[points.length - 1].values[seriesIndex],
     }));
 
-    return { max, stepX, x, y, series, labelEvery, axisTicks: ticks(max, 4), axisFormat: makeAxisFormatter(max) };
+    return {
+      max,
+      narrow,
+      pad,
+      stepX,
+      x,
+      y,
+      series,
+      labelEvery,
+      axisTicks: ticks(max, 4),
+      axisFormat: makeAxisFormatter(max),
+    };
   }, [height, points, seriesNames, width]);
 
   function pickIndex(clientX: number, target: SVGSVGElement) {
     const rect = target.getBoundingClientRect();
-    const raw = Math.round((clientX - rect.left - PAD.left) / geo.stepX);
+    const raw = Math.round((clientX - rect.left - geo.pad.left) / geo.stepX);
     setActive(clamp(raw, 0, points.length - 1));
   }
 
@@ -106,15 +122,15 @@ export function LineChart({
           {geo.axisTicks.map((tick) => (
             <g key={tick}>
               <line
-                x1={PAD.left}
-                x2={width - PAD.right}
+                x1={geo.pad.left}
+                x2={width - geo.pad.right}
                 y1={geo.y(tick)}
                 y2={geo.y(tick)}
                 stroke="var(--grid)"
                 strokeWidth={1}
               />
               <text
-                x={PAD.left - 8}
+                x={geo.pad.left - 8}
                 y={geo.y(tick) + 3.5}
                 textAnchor="end"
                 className="tnum"
@@ -127,8 +143,8 @@ export function LineChart({
           ))}
 
           <line
-            x1={PAD.left}
-            x2={width - PAD.right}
+            x1={geo.pad.left}
+            x2={width - geo.pad.right}
             y1={geo.y(0)}
             y2={geo.y(0)}
             stroke="var(--axis)"
@@ -154,7 +170,7 @@ export function LineChart({
             <line
               x1={geo.x(active)}
               x2={geo.x(active)}
-              y1={PAD.top}
+              y1={geo.pad.top}
               y2={geo.y(0)}
               stroke="var(--axis)"
               strokeWidth={1}
@@ -187,10 +203,12 @@ export function LineChart({
               ))
             : null}
 
-          {geo.series.map((series) => (
+          {geo.narrow
+            ? null
+            : geo.series.map((series) => (
             <text
               key={`end-${series.name}`}
-              x={width - PAD.right + 8}
+              x={width - geo.pad.right + 8}
               y={geo.y(series.lastValue) + 3.5}
               fill="var(--ink-secondary)"
               fontSize={10}
@@ -198,7 +216,7 @@ export function LineChart({
             >
               {geo.axisFormat(series.lastValue)}
             </text>
-          ))}
+              ))}
         </svg>
         ) : null}
 

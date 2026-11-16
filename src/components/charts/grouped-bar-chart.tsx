@@ -9,6 +9,8 @@ import { useElementWidth } from "@/lib/use-element-width";
 
 const SERIES_COLORS = ["var(--series-1)", "var(--series-2)", "var(--series-3)"];
 const PAD = { top: 14, right: 8, bottom: 26, left: 48 };
+const NARROW = 440;
+const PAD_NARROW = { top: 14, right: 6, bottom: 24, left: 34 };
 const GROUP_GAP_RATIO = 0.52;
 const BAR_GAP = 2; // surface gap between adjacent bars
 const END_RADIUS = 4; // rounded data-end, anchored to the baseline
@@ -49,17 +51,31 @@ export function GroupedBarChart({
   const titleId = useId();
 
   const geo = useMemo(() => {
+    const pad = width > 0 && width < NARROW ? PAD_NARROW : PAD;
     const max = niceCeil(Math.max(...groups.flatMap((group) => group.values)));
-    const plotW = Math.max(width - PAD.left - PAD.right, 80);
-    const plotH = Math.max(height - PAD.top - PAD.bottom, 60);
+    const plotW = Math.max(width - pad.left - pad.right, 80);
+    const plotH = Math.max(height - pad.top - pad.bottom, 60);
     const slot = plotW / groups.length;
     const bandW = slot * (1 - GROUP_GAP_RATIO);
     const barW = Math.max((bandW - BAR_GAP * (seriesNames.length - 1)) / seriesNames.length, 3);
-    const baseline = PAD.top + plotH;
-    const y = (value: number) => PAD.top + plotH * (1 - value / max);
-    const groupX = (index: number) => PAD.left + slot * index + (slot - bandW) / 2;
+    const baseline = pad.top + plotH;
+    const y = (value: number) => pad.top + plotH * (1 - value / max);
+    const groupX = (index: number) => pad.left + slot * index + (slot - bandW) / 2;
+    const labelEvery = Math.max(Math.ceil(40 / Math.max(slot, 1)), 1);
 
-    return { max, slot, bandW, barW, baseline, y, groupX, axisTicks: ticks(max, 4), axisFormat: makeAxisFormatter(max) };
+    return {
+      max,
+      pad,
+      slot,
+      bandW,
+      barW,
+      baseline,
+      y,
+      groupX,
+      labelEvery,
+      axisTicks: ticks(max, 4),
+      axisFormat: makeAxisFormatter(max),
+    };
   }, [groups, height, seriesNames.length, width]);
 
   const activeGroup = active === null ? null : groups[active];
@@ -88,15 +104,15 @@ export function GroupedBarChart({
           {geo.axisTicks.map((tick) => (
             <g key={tick}>
               <line
-                x1={PAD.left}
-                x2={width - PAD.right}
+                x1={geo.pad.left}
+                x2={width - geo.pad.right}
                 y1={geo.y(tick)}
                 y2={geo.y(tick)}
                 stroke="var(--grid)"
                 strokeWidth={1}
               />
               <text
-                x={PAD.left - 8}
+                x={geo.pad.left - 8}
                 y={geo.y(tick) + 3.5}
                 textAnchor="end"
                 className="tnum"
@@ -109,8 +125,8 @@ export function GroupedBarChart({
           ))}
 
           <line
-            x1={PAD.left}
-            x2={width - PAD.right}
+            x1={geo.pad.left}
+            x2={width - geo.pad.right}
             y1={geo.baseline}
             y2={geo.baseline}
             stroke="var(--axis)"
@@ -123,10 +139,10 @@ export function GroupedBarChart({
               <g key={group.label}>
                 {/* hover target spans the whole slot, bigger than the marks */}
                 <rect
-                  x={PAD.left + geo.slot * groupIndex}
-                  y={PAD.top}
+                  x={geo.pad.left + geo.slot * groupIndex}
+                  y={geo.pad.top}
                   width={geo.slot}
-                  height={geo.baseline - PAD.top}
+                  height={geo.baseline - geo.pad.top}
                   fill={active === groupIndex ? "var(--surface-2)" : "transparent"}
                   onMouseEnter={() => setActive(groupIndex)}
                 />
@@ -144,7 +160,7 @@ export function GroupedBarChart({
                   );
                 })}
                 <text
-                  x={PAD.left + geo.slot * groupIndex + geo.slot / 2}
+                  x={geo.pad.left + geo.slot * groupIndex + geo.slot / 2}
                   y={height - 8}
                   textAnchor="middle"
                   fill="var(--ink-muted)"
@@ -162,7 +178,11 @@ export function GroupedBarChart({
         <ChartTooltip
           visible={activeGroup !== null}
           title={activeGroup?.label ?? ""}
-          xPct={active === null || width === 0 ? 0 : ((PAD.left + geo.slot * (active + 0.5)) / width) * 100}
+          xPct={
+            active === null || width === 0
+              ? 0
+              : ((geo.pad.left + geo.slot * (active + 0.5)) / width) * 100
+          }
           yPct={4}
           rows={
             activeGroup

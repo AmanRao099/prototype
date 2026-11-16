@@ -231,6 +231,31 @@ Other rules that keep it calm:
 - **Type roles, not ad-hoc sizes:** `t-page-title`, `t-panel-title`, `t-eyebrow`,
   `t-figure`, `t-figure-sm`, `t-caption` are defined once in `globals.css`.
 
+## On a phone
+
+The registers are the hard part: a nine-column invoice table cannot shrink, so below
+`md` it stops being a table.
+
+- **Registers become cards.** `DataTable` renders one card per record from the same
+  column definitions - first column as the title, the last money column as the headline
+  figure on the right, the rest as label/value pairs, and any action column at the foot.
+  From `md` up it is the table again. A column that is reference-only on a phone can opt
+  out with `hideOnCard`.
+  The totals row ships with the table; on a phone the figures above the register carry it.
+- **Touch targets.** Controls are 40px tall below `sm` and 44px in the navigation drawer,
+  dropping to the 34px desktop size only once there is a pointer-sized screen.
+- **No accidental zoom.** Inputs render at 16px below `sm`, because iOS zooms the page
+  when a smaller field takes focus.
+- **Rows that scroll instead of wrapping.** Filter chips and the tab strip scroll
+  horizontally with the scrollbar hidden (`.no-scrollbar`); menus are capped at a share of
+  the viewport rather than a fixed pixel width.
+- **Charts re-measure.** Below 440px the axis gutter narrows, end-of-line value labels drop
+  (the legend and the tooltip still name every series) and x labels thin out to whatever
+  fits, so the plot keeps its width.
+- **Safe areas.** The drawer and the page bottom respect `env(safe-area-inset-*)`.
+- Hand-rolled tables that are not registers - the permission matrix, the audit field diff -
+  sit in a scroll container with a minimum width rather than squeezing.
+
 ## Conventions worth keeping
 
 - **Design tokens only.** Colours come from `globals.css` custom properties; dark mode is a

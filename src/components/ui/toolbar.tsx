@@ -31,7 +31,7 @@ export function Toolbar({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-hairline px-4 py-3">
-      <label className="relative min-w-[220px] flex-1">
+      <label className="relative w-full sm:w-auto sm:min-w-[220px] sm:flex-1">
         <span className="sr-only">{searchPlaceholder}</span>
         <Search
           className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-ink-muted"
@@ -45,24 +45,30 @@ export function Toolbar({
         />
       </label>
 
-      {filters.map((filter) => (
-        <label key={filter.id} className="flex items-center">
-          <span className="sr-only">{filter.label}</span>
-          <select
-            value={filter.value}
-            onChange={(event) => filter.onChange(event.target.value)}
-            className="field field-pill select-field pl-3.5"
-          >
-            {filter.options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      ))}
+      {filters.length > 0 ? (
+        <div className="no-scrollbar -mx-1 flex w-full gap-2 overflow-x-auto px-1 sm:mx-0 sm:w-auto sm:overflow-visible sm:px-0">
+          {filters.map((filter) => (
+            <label key={filter.id} className="flex shrink-0 items-center">
+              <span className="sr-only">{filter.label}</span>
+              <select
+                value={filter.value}
+                onChange={(event) => filter.onChange(event.target.value)}
+                className="field field-pill select-field max-w-[62vw] pl-3.5 sm:max-w-none"
+              >
+                {filter.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ))}
+        </div>
+      ) : null}
 
-      {children ? <div className="flex items-center gap-2 pl-1">{children}</div> : null}
+      {children ? (
+        <div className="flex w-full items-center gap-2 sm:w-auto sm:pl-1">{children}</div>
+      ) : null}
     </div>
   );
 }

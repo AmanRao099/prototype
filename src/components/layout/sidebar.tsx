@@ -63,14 +63,14 @@ export function Sidebar({
 
       <aside
         className={cn(
-          "frosted fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-hairline transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+          "safe-l frosted fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-hairline transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
           collapsed ? "lg:w-[68px]" : "lg:w-[258px]",
-          "w-[258px]",
+          "w-[min(86vw,300px)] lg:w-[258px]",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         {/* brand */}
-        <div className="flex h-[60px] items-center gap-2.5 px-4">
+        <div className="flex h-14 items-center gap-2.5 px-4 sm:h-[60px]">
           <Link
             href={DASHBOARD_ITEM.href}
             className="flex min-w-0 items-center gap-2.5"
@@ -94,7 +94,7 @@ export function Sidebar({
           <button
             type="button"
             onClick={onCloseMobile}
-            className="ml-auto grid size-8 place-items-center rounded-full text-ink-muted hover:bg-surface-2 hover:text-ink lg:hidden"
+            className="ml-auto grid size-10 place-items-center rounded-full text-ink-muted hover:bg-surface-2 hover:text-ink lg:hidden"
             aria-label="Close navigation"
           >
             <X className="size-4" />
@@ -175,7 +175,7 @@ export function Sidebar({
                     onClick={() => toggleSection(section.id)}
                     aria-expanded={isOpen}
                     className={cn(
-                      "flex h-[34px] w-full items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] font-medium",
+                      "flex h-11 w-full items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] font-medium lg:h-[34px]",
                       hasActive ? "text-ink" : "text-ink-secondary",
                       "hover:bg-surface-2",
                     )}
@@ -218,14 +218,14 @@ export function Sidebar({
         </nav>
 
         {/* utility rail: everything administrative lives behind these two */}
-        <div className="border-t border-hairline p-3">
+        <div className="safe-b border-t border-hairline p-3 lg:pb-3">
           <Link
             href="/modules"
             onClick={onCloseMobile}
             title={collapsed ? "All modules" : undefined}
             aria-current={pathname === "/modules" ? "page" : undefined}
             className={cn(
-              "flex h-[34px] items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] transition-colors",
+              "flex h-11 items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] transition-colors lg:h-[34px]",
               pathname === "/modules"
                 ? "bg-accent-wash font-medium text-ink"
                 : "text-ink-secondary hover:bg-surface-2 hover:text-ink",
@@ -241,7 +241,7 @@ export function Sidebar({
             title={collapsed ? "Settings" : undefined}
             aria-current={pathname === "/settings" || settingsActive ? "page" : undefined}
             className={cn(
-              "mt-0.5 flex h-[34px] items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] transition-colors",
+              "mt-0.5 flex h-11 items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] transition-colors lg:h-[34px]",
               pathname === "/settings" || settingsActive
                 ? "bg-accent-wash font-medium text-ink"
                 : "text-ink-secondary hover:bg-surface-2 hover:text-ink",
@@ -280,7 +280,7 @@ function SidebarLink({
       title={collapsed ? item.label : item.moduleName}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group relative flex h-[34px] items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] transition-colors",
+        "group relative flex h-11 items-center gap-2.5 rounded-[11px] px-2.5 text-[13px] transition-colors lg:h-[34px]",
         active
           ? "bg-accent-wash font-medium text-ink"
           : "text-ink-secondary hover:bg-surface-2 hover:text-ink",

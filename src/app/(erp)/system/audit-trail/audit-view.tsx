@@ -175,7 +175,8 @@ export function AuditView({
           }
         />
         <PanelBody flush>
-          <table className="w-full border-collapse text-[12.5px]">
+          <div className="scroll-thin overflow-x-auto">
+          <table className="w-full min-w-[460px] border-collapse text-[12.5px]">
             <thead>
               <tr className="border-b border-hairline text-left">
                 <th scope="col" className="px-4 py-2 text-[11.5px] font-medium text-ink-muted">
@@ -201,6 +202,7 @@ export function AuditView({
               ))}
             </tbody>
           </table>
+          </div>
         </PanelBody>
       </Panel>
     ) : null}

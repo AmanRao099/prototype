@@ -51,18 +51,18 @@ export function Topbar({
   const financialYear = company.financialYears.find((year) => year.id === fyId);
 
   return (
-    <header className="frosted sticky top-0 z-20 flex h-[60px] items-center gap-3 border-b border-hairline px-5 sm:px-8">
+    <header className="frosted sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-hairline px-4 sm:h-[60px] sm:gap-3 sm:px-8">
       <button
         type="button"
         onClick={onOpenMobileNav}
-        className="grid size-[34px] place-items-center rounded-full border border-hairline text-ink-secondary hover:bg-surface-2 lg:hidden"
+        className="grid size-10 shrink-0 place-items-center rounded-full border border-hairline text-ink-secondary hover:bg-surface-2 lg:hidden"
         aria-label="Open navigation"
       >
         <Menu className="size-4" />
       </button>
 
       <nav aria-label="Breadcrumb" className="min-w-0 flex-1">
-        <ol className="flex min-w-0 items-center gap-2 text-[13px]">
+        <ol className="flex min-w-0 items-center gap-1.5 text-[13px] sm:gap-2">
           {match?.section ? (
             <>
               <li className="hidden shrink-0 text-ink-muted sm:block">{match.section.title}</li>
@@ -82,7 +82,7 @@ export function Topbar({
             type="button"
             onClick={() => setContextOpen((open) => !open)}
             aria-expanded={contextOpen}
-            className="flex h-[34px] items-center gap-2 rounded-full border border-hairline px-3.5 text-[12.5px] text-ink-secondary hover:border-hairline-strong hover:text-ink"
+            className="flex h-10 max-w-[42vw] items-center gap-2 rounded-full border border-hairline px-3 text-[12.5px] text-ink-secondary hover:border-hairline-strong hover:text-ink sm:h-[34px] sm:max-w-none sm:px-3.5"
           >
             <span className="hidden font-medium text-ink sm:inline">{company.name}</span>
             <span className="hidden text-ink-muted sm:inline">·</span>
@@ -97,7 +97,7 @@ export function Topbar({
           {contextOpen ? (
             <>
               <div className="fixed inset-0 z-20" onClick={() => setContextOpen(false)} aria-hidden />
-              <div className="absolute right-0 z-30 mt-1.5 w-[250px] overflow-hidden rounded-[16px] border border-hairline bg-surface shadow-raised">
+              <div className="absolute right-0 z-30 mt-1.5 w-[min(84vw,250px)] overflow-hidden rounded-[16px] border border-hairline bg-surface shadow-raised">
                 <p className="t-eyebrow border-b border-hairline px-3 py-2">Branch</p>
                 <ul className="p-1">
                   {company.branches.map((entry) => (
@@ -148,7 +148,7 @@ export function Topbar({
             type="button"
             onClick={() => setCreateOpen((open) => !open)}
             aria-expanded={createOpen}
-            className="inline-flex h-[34px] items-center gap-1.5 rounded-full bg-accent px-4 text-[12.5px] font-medium text-on-accent hover:bg-accent-hover"
+            className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-accent px-3.5 text-[12.5px] font-medium text-on-accent hover:bg-accent-hover sm:h-[34px] sm:px-4"
           >
             <Plus className="size-3.5" aria-hidden />
             <span className="hidden sm:inline">New</span>
@@ -156,7 +156,7 @@ export function Topbar({
           {createOpen ? (
             <>
               <div className="fixed inset-0 z-20" onClick={() => setCreateOpen(false)} aria-hidden />
-              <ul className="absolute right-0 z-30 mt-1.5 min-w-[210px] overflow-hidden rounded-[16px] border border-hairline bg-surface p-1 shadow-raised">
+              <ul className="absolute right-0 z-30 mt-1.5 w-[min(84vw,230px)] overflow-hidden rounded-[16px] border border-hairline bg-surface p-1 shadow-raised">
                 {QUICK_CREATE.map((entry) => (
                   <li key={entry.label}>
                     <Link
@@ -176,7 +176,7 @@ export function Topbar({
         <button
           type="button"
           onClick={onOpenSearch}
-          className="grid size-[34px] place-items-center rounded-full text-ink-muted hover:bg-surface-2 hover:text-ink lg:hidden"
+          className="grid size-10 shrink-0 place-items-center rounded-full text-ink-muted hover:bg-surface-2 hover:text-ink lg:hidden"
           aria-label="Search modules"
         >
           <Search className="size-4" aria-hidden />
@@ -185,7 +185,7 @@ export function Topbar({
         <Link
           href="/system/notifications"
           className={cn(
-            "relative grid size-[34px] place-items-center rounded-full transition-colors hover:bg-surface-2",
+            "relative grid size-10 shrink-0 place-items-center rounded-full transition-colors hover:bg-surface-2 sm:size-[34px]",
             pathname === "/system/notifications" ? "text-ink" : "text-ink-muted hover:text-ink",
           )}
           aria-label={`Notifications, ${alertCount} unread`}
@@ -199,7 +199,7 @@ export function Topbar({
         <ThemeToggle />
 
         <span
-          className="ml-1 grid size-8 shrink-0 place-items-center rounded-full bg-surface-2 text-[11.5px] font-semibold text-ink-secondary ring-1 ring-hairline"
+          className="ml-1 hidden size-8 shrink-0 place-items-center rounded-full bg-surface-2 text-[11.5px] font-semibold text-ink-secondary ring-1 ring-hairline sm:grid"
           title={`${user.name} · ${user.roleName}`}
         >
           {user.initials}
